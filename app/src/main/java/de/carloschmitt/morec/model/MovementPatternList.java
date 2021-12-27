@@ -9,7 +9,7 @@ public class MovementPatternList {
 
      String[] dictionary = {"Gehen", "Stehen", "Laufen", "Schnelles gehen", "Stampfen", "Stolpern", "Balancieren", "Schleichen", "180 Grad Drehung", "Sehr ungünstiges Hinfallen und danach lachen."};
      int counter = 0;
-    public static List<MovementPatternItem> ITEMS;
+    public static List<MovementPattern> ITEMS;
 
     public MovementPatternList(){
         ITEMS = new ArrayList<>();
@@ -17,12 +17,20 @@ public class MovementPatternList {
 
     public  void generateExampleData(){
         for (int i = 0; i < 25; i++){
-            addItem(new MovementPatternItem(dictionary[i%dictionary.length], i, false));
+            addItem(new MovementPattern(dictionary[i%dictionary.length], false));
         }
     }
 
-    private void addItem(MovementPatternItem item) {
+    private void addItem(MovementPattern item) {
         ITEMS.add(item);
         counter++;
+    }
+
+    private void loadListFromDisk(){
+
+    }
+
+    private void saveListToDisk(){
+
     }
 }

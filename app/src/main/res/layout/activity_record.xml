@@ -5,7 +5,7 @@
     <data>
         <variable
             name="mp"
-            type="de.carloschmitt.morec.model.MovementPatternItem" />
+            type="de.carloschmitt.morec.model.MovementPattern" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -96,7 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@{mp.sample_count}"
+                    android:text="@{mp.patternCount}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
             </LinearLayout>
 
@@ -108,10 +108,10 @@
                 android:text="Aufnahme Starten" />
 
             <Button
-                android:id="@+id/btn_save"
+                android:id="@+id/btn_delete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Speichern" />
+                android:text="Bewegung Löschen" />
 
         </LinearLayout>
 
