@@ -57,6 +57,7 @@ public class RecordActivity extends AppCompatActivity {
         btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Data.movementPatterns.remove(Data.selectedMovement);
                 finish();
             }

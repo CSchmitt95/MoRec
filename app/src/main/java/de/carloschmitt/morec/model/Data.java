@@ -1,17 +1,12 @@
 package de.carloschmitt.morec.model;
 
-import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.meicke.threeSpaceSensorAndroidAPI.Exceptions.TssCommunicationException;
 import com.meicke.threeSpaceSensorAndroidAPI.Exceptions.TssConnectionException;
 import com.meicke.threeSpaceSensorAndroidAPI.Quaternion;
 import com.meicke.threeSpaceSensorAndroidAPI.TssMiniBluetooth;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,21 +24,23 @@ public class Data {
 
     public static List<MovementPattern> movementPatterns;
     public static List<Sensor> sensors;
-    public static SampleBuffer sampleBuffer;
 
     public static boolean activeConnection;         // Bestimmt Lebenszeit des Sampler Threads
     public static MovementPattern selectedMovement;
 
+    public static TapeRecorder tapeRecorder;
+
+
     private Data(){
         movementPatterns = new ArrayList<>();
         sensors = new ArrayList<>();
-        sampleBuffer = new SampleBuffer(MAX_SAMPLES, OVERLAP);
         selectedMovement = null;
 
         sensors.add(new Sensor("Links", "00:0E:0E:16:8F:F6")); // UUID: 00001101-0000-1000-8000-00805f9b34fb
         sensors.add(new Sensor("Rechts","00:0E:0E:1B:60:DE")); // UUID: 00001101-0000-1000-8000-00805f9b34fb
 
         movementPatterns.add(new MovementPattern("Gehen",false));
+        tapeRecorder = new TapeRecorder();
     }
 
     public static Data getInstance(){
@@ -52,15 +49,18 @@ public class Data {
     }
 
     public static boolean isRecording(){
-        return sampleBuffer.getCurrentMovementPattern() != null;
+        return tapeRecorder.isRecording();
     }
 
     public static void startRecording(){
-        sampleBuffer.setCurrentMovementPattern(selectedMovement);
+        for(Sensor sensor : sensors){
+            tapeRecorder.insertTape(new Tape(sensor, selectedMovement));
+        }
+        tapeRecorder.pressRecord();
     }
 
     public static void stopRecording(){
-        sampleBuffer.setCurrentMovementPattern(null);
+        tapeRecorder.pressStop();
     }
 
     public static void activateSensors(){
@@ -107,23 +107,21 @@ public class Data {
             //Aufnehmen der Daten.
             if(success){
                 while (activeConnection) {
+                    long before = System.currentTimeMillis();
+                    long after = 0;
                     try {
-                        Sample sample = new Sample();
                         for (Sensor sensor : sensors) {
                             if(!sensor.isActive()) break;
                             Quaternion sample_data = sensor.tssMiniBluetooth.getOrientationAsQuaternion();
-                            String sensor_name = sensor.getName();
-                            sample.addSample(sensor_name, sample_data);
+                            tapeRecorder.recordQuaternion(sample_data, sensor);
+                            after = System.currentTimeMillis();
+
                         }
-                        sampleBuffer.add(sample);
-                        if(sampleBuffer.isSaturated()) {
-                            sampleBuffer.getCurrentMovementPattern().addPattern(sampleBuffer.getSamples());
-                        }
-                        else Log.d(TAG, sampleBuffer.status());
                         Thread.sleep(5 );
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    if(after == 0 && (after - before) > 5) Log.d(TAG,"Loop-Ausführungszeit zu lang: " + (after-before));
                 }
 
             }
@@ -143,31 +141,6 @@ public class Data {
     }
 
     public static void exportData(){
-        /*for(MovementPattern movements : movementPatterns){
-            try
-            {
-                File root = new File(Environment.getExternalStorageDirectory(), "Aufnahmen");
-                if (!root.exists()) {
-                    root.mkdirs();
-                }
 
-                for(List<Sample> patternList : movements.patternList){
-                    for(String sensor : patternList.get(0).samples.keySet()){
-                        File gpxfile = new File(root, movements.name + "_" + sensor + ".csv");
-                        FileWriter writer = new FileWriter(gpxfile);
-                        for(Sample sample : patternList){
-                            Quaternion q = sample.samples.get(sensor);
-                            writer.append(q.toString());
-                        }
-                        writer.flush();
-                        writer.close();
-                    }
-                }
-            }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-            }
-        }*/
     }
 }

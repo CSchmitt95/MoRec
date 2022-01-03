@@ -11,10 +11,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import de.carloschmitt.morec.R;
 import de.carloschmitt.morec.adapters.MovementPatternRecyclerViewAdapter;
 import de.carloschmitt.morec.model.Data;
 import de.carloschmitt.morec.model.MovementPattern;
+import de.carloschmitt.morec.model.Tape;
 
 public class ListActivity extends AppCompatActivity {
 
@@ -54,7 +59,30 @@ public class ListActivity extends AppCompatActivity {
         btn_exportData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Data.exportData();
+                try
+                {
+                    File root = new File(getApplicationContext().getExternalFilesDir(null).toString(), "Aufnahmen");
+                    if (!root.exists()) {
+                        root.mkdirs();
+                    }
+                    for(MovementPattern movement : Data.movementPatterns){
+                        File gpxfile = new File(root, movement.name + ".csv");
+                        FileWriter writer = new FileWriter(gpxfile);
+                        writer.append("MovementName,");
+                        writer.append("SensorName,");
+                        writer.append("w0,x0,y0 z0,... wn, xn, yn, zn\n");
+                        for(Tape tape : movement.tapes){
+                            writer.append(tape.getMovementPattern().getName() + "," + tape.getSensor().getName() + "," + tape.getQuaternionsAsNulledString() + "\n");
+                            writer.flush();
+                        }
+                        writer.close();
+
+                    }
+                }
+                catch(IOException e)
+                {
+                    e.printStackTrace();
+                }
             }
         });
     }
