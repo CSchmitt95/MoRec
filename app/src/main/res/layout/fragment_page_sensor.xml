@@ -3,33 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.ListActivity">
+    android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list"
-        android:name="de.carloschmitt.morec.MovementPatternFragment"
+        android:id="@+id/rv_sensors"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingTop="10sp"
-        android:paddingBottom="125sp"
-        app:layoutManager="LinearLayoutManager"
-        tools:context=".fragments.MovementPatternFragment"
-        tools:listitem="@layout/fragment_item" />
+        tools:layout_editor_absoluteX="10dp"
+        tools:layout_editor_absoluteY="10dp"
+        tools:listitem="@layout/fragment_item_sensor">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
-        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
-        android:layout_weight="0"
         app:cardElevation="5dp"
         app:contentPadding="5dp"
-        app:layout_constraintBottom_toBottomOf="@+id/list"
-        app:layout_constraintEnd_toEndOf="@+id/list"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0">
@@ -37,21 +33,28 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:gravity="center|center_horizontal|fill_vertical|end"
+            android:orientation="vertical"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp">
 
             <Button
-                android:id="@+id/btn_Export"
+                android:id="@+id/btn_addSensor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:text="Daten exportieren" />
+                android:text="Sensor hinzufügen" />
 
             <Button
-                android:id="@+id/btn_AddMovement"
+                android:id="@+id/btn_checkPairing"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:text="Bewegung Hinzufügen" />
+                android:text="paring Prüfen" />
+
+            <Button
+                android:id="@+id/btn_checkRecording"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Verbinden" />
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

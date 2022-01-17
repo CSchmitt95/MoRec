@@ -1,46 +1,65 @@
 package de.carloschmitt.morec.model;
 
+import android.content.Context;
 import android.util.Log;
 
-import com.meicke.threeSpaceSensorAndroidAPI.Exceptions.TssCommunicationException;
-import com.meicke.threeSpaceSensorAndroidAPI.Exceptions.TssConnectionException;
-import com.meicke.threeSpaceSensorAndroidAPI.Quaternion;
-import com.meicke.threeSpaceSensorAndroidAPI.TssMiniBluetooth;
-
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import de.carloschmitt.morec.activities.SensorActivity;
+import de.carloschmitt.morec.adapters.MovementItemAdapter;
+import de.carloschmitt.morec.adapters.SensorItemAdapter;
+import de.carloschmitt.morec.recording.Recorder;
+import de.carloschmitt.morec.recording.Recording;
 
 public class Data {
+    //Wichtige Konstanten
+    private static Data instance;
     public static final String TAG = "Data";
     public static final int WINDOW_SIZE_IN_S = 3;
     public static final double OVERLAP_IN_S = 0.25;
-    public static final int SAMPLES_PER_SECOND = 200;
+    public static final int SAMPLES_PER_SECOND = 125;
+    public static final int SLEEP_TIME = 1000/SAMPLES_PER_SECOND;
+    public static final int OVERLAP = (int) Math.ceil(OVERLAP_IN_S * SAMPLES_PER_SECOND);
+    public static final int MAX_SAMPLES = WINDOW_SIZE_IN_S * SAMPLES_PER_SECOND + 2 * OVERLAP ;
 
-    private static final int MAX_SAMPLES = WINDOW_SIZE_IN_S * SAMPLES_PER_SECOND;
-    private static final int OVERLAP = (int) OVERLAP_IN_S * SAMPLES_PER_SECOND;
-    private static Data instance;
+    public enum State{
+        INACTIVE,
+        CONNECTING,
+        CONNECTED,
+        RECORDING
+    }
 
-    public static List<MovementPattern> movementPatterns;
+    public static State state;
+    // Listen bezüglich aller Sensoren und Bewegungen
+    public static List<Movement> movements;
     public static List<Sensor> sensors;
+    public static Recorder recorder;
 
-    public static boolean activeConnection;         // Bestimmt Lebenszeit des Sampler Threads
-    public static MovementPattern selectedMovement;
-
-    public static TapeRecorder tapeRecorder;
+    //Wichtige Zustände:
+    public static MovementItemAdapter movementItemAdapter;
+    public static SensorItemAdapter sensorItemAdapter;
 
 
     private Data(){
-        movementPatterns = new ArrayList<>();
+        movements = new ArrayList<>();
         sensors = new ArrayList<>();
-        selectedMovement = null;
+        recorder = null;
 
-        sensors.add(new Sensor("Links", "00:0E:0E:16:8F:F6")); // UUID: 00001101-0000-1000-8000-00805f9b34fb
-        sensors.add(new Sensor("Rechts","00:0E:0E:1B:60:DE")); // UUID: 00001101-0000-1000-8000-00805f9b34fb
+        sensors.add(new Sensor("Gürtel", "00:0E:0E:16:8F:F6")); // UUID: 00001101-0000-1000-8000-00805f9b34fb
+        sensors.add(new Sensor("Handgelenk","00:0E:0E:1B:60:DE")); // UUID: 00001101-0000-1000-8000-00805f9b34fb
 
-        movementPatterns.add(new MovementPattern("Gehen",false));
-        tapeRecorder = new TapeRecorder();
+        movements.add(new Movement("Gehen",false));
+        movements.add(new Movement("Stehen",false));
+        movements.add(new Movement("Stolpern",true));
+
+        movementItemAdapter = null;
+        sensorItemAdapter = null;
+        state = State.INACTIVE;
     }
 
     public static Data getInstance(){
@@ -48,99 +67,59 @@ public class Data {
         else return instance;
     }
 
-    public static boolean isRecording(){
-        return tapeRecorder.isRecording();
-    }
-
-    public static void startRecording(){
-        for(Sensor sensor : sensors){
-            tapeRecorder.insertTape(new Tape(sensor, selectedMovement));
+    public static void startRecording(Movement movement){
+        if(state == State.CONNECTED){
+            recorder.startRecording(movement);
         }
-        tapeRecorder.pressRecord();
     }
 
     public static void stopRecording(){
-        tapeRecorder.pressStop();
-    }
-
-    public static void activateSensors(){
-        Log.d(TAG, "aktiviere alle Sensoren...");
-        activeConnection = true;
-        Thread connectorThread = new Thread(new SensorConnector());
-        connectorThread.start();
-    }
-
-    public static void stopAllSensors(){
-        Log.d(TAG, "Stoppe alle Sensoren...");
-        activeConnection = false;
-    }
-
-    public static class SensorConnector implements Runnable{
-        private final String TAG = "SensorConnector";
-        @Override
-        public void run() {
-            boolean success = true;
-            // Alle Sensoren streamen lassen.
-            for (Sensor sensor : sensors) {
-                String name = sensor.getName();
-                try {
-                    if (sensor.tssMiniBluetooth == null)
-                        sensor.tssMiniBluetooth = new TssMiniBluetooth(sensor.getAddress(), false);
-
-                    TssMiniBluetooth tssMiniBluetooth = sensor.tssMiniBluetooth;
-                    Log.d(TAG + "@" + name, "Verbinde mit Sensor... ");
-                    tssMiniBluetooth.connectSocket();
-                    tssMiniBluetooth.startStream();
-
-                    Log.d(TAG + "@" + name, "Verbindung hergestellt!");
-                    SensorActivity.updateList();
-
-                } catch (TssCommunicationException | TssConnectionException e) {
-                    success = false;
-                    Log.d(TAG + "@" + name, "Fehler beim Verbindungsaufbau!");
-                    e.printStackTrace();
-                    break;
-                }
-            }
-
-
-            //Aufnehmen der Daten.
-            if(success){
-                while (activeConnection) {
-                    long before = System.currentTimeMillis();
-                    long after = 0;
-                    try {
-                        for (Sensor sensor : sensors) {
-                            if(!sensor.isActive()) break;
-                            Quaternion sample_data = sensor.tssMiniBluetooth.getOrientationAsQuaternion();
-                            tapeRecorder.recordQuaternion(sample_data, sensor);
-                            after = System.currentTimeMillis();
-
-                        }
-                        Thread.sleep(5 );
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    if(after == 0 && (after - before) > 5) Log.d(TAG,"Loop-Ausführungszeit zu lang: " + (after-before));
-                }
-
-            }
-
-            for(Sensor sensor : sensors){
-                if(sensor.isActive()) {
-                    try {
-                        sensor.tssMiniBluetooth.disconnectSocket();
-                        SensorActivity.updateList();
-                    } catch (TssConnectionException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            Log.d(TAG, "Stoppe Thread.");
+        if(state == State.RECORDING){
+            recorder.stopRecording();
         }
     }
 
-    public static void exportData(){
+    public static void connectSensors(){
+        if(state == State.INACTIVE) {
+            Log.d(TAG, "Verbinde alle Sensoren...");
+            recorder = new Recorder();
+            state = State.CONNECTING;
+        }
+    }
 
+    public static void disconnectSensors(){
+        if(state == State.CONNECTED){
+            Log.d(TAG, "Trenne alle Sensoren...");
+            if(recorder != null) {
+                recorder.destroy();
+                recorder = null;
+            }
+        }
+    }
+
+    public static void exportData(Context context){
+        try
+        {
+            String foldername = new SimpleDateFormat("yyyyMMdd_HH:mm").format(new Date());
+            File root = new File(context.getExternalFilesDir(null).toString(), foldername);
+            if (!root.exists()) {
+                root.mkdirs();
+            }
+            for(Movement movement : Data.movements){
+                File gpxfile = new File(root, movement.name + ".csv");
+                FileWriter writer = new FileWriter(gpxfile);
+                writer.append("MovementName,SensorName,Record_id,");
+                writer.append("x0,y0 z0,w0... wn, xn, yn, zn\n");
+                for(Recording recording : movement.getRecordings()){
+                    writer.append(recording.getMovement().getName() + "," + recording.getSensor().getName() + "," + recording.getSession_id() + recording.getQuaternionsAsString() + "\n");
+                    writer.flush();
+                }
+                writer.close();
+            }
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/movementPage"
+        android:enabled="true"
+        android:icon="@android:drawable/stat_notify_sdcard"
+        android:title="Bewegungen" />
+    <item
+        android:id="@+id/sensorPage"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_lock_idle_charging"
+        android:title="Sensoren" />
+    <item
+        android:id="@+id/classifcationPage"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_media_play"
+        android:title="Erkennung" />
+</menu>

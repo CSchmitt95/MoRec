@@ -24,15 +24,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MoRec">
         <activity
-            android:name=".activities.SensorActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.RecordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.ListActivity"
-            android:exported="false" />
-        <activity
             android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>
