@@ -40,6 +40,14 @@
             android:paddingLeft="3dp"
             android:paddingRight="3dp">
 
+            <ProgressBar
+                android:id="@+id/exportProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:visibility="gone" />
+
             <Button
                 android:id="@+id/btn_Export"
                 android:layout_width="match_parent"

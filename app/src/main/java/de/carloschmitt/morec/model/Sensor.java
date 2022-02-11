@@ -53,6 +53,8 @@ public class Sensor {
     public void connect() throws TssConnectionException, TssCommunicationException {
         if(tssMiniBluetooth == null){
             tssMiniBluetooth = new TssMiniBluetooth(address, false);
+        }
+        if(tssMiniBluetooth.getIsConnected() == false){
             Log.d(TAG + "@" + name, "Verbinde mit Sensor... ");
             tssMiniBluetooth.connectSocket();
             Log.d(TAG + "@" + name, "Erfolg ");
@@ -65,11 +67,16 @@ public class Sensor {
         }
     }
 
-
+    public void tare(){
+        try {
+            tssMiniBluetooth.setCurrentOrientationAsTare();
+        } catch (TssCommunicationException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void disconnect() throws TssConnectionException {
         tssMiniBluetooth.disconnectSocket();
-        tssMiniBluetooth = null;
     }
 
     public Quaternion getQuaternion() throws TssCommunicationException {

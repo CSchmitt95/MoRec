@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,6 +21,7 @@ import de.carloschmitt.morec.model.Movement;
 public class MovementPage extends Fragment implements View.OnClickListener {
     private static final String TAG = "MovementPageFragment";
     public RecyclerView rv;
+    private ProgressBar progess;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_page_movement, container, false);
@@ -37,6 +39,7 @@ public class MovementPage extends Fragment implements View.OnClickListener {
         }
         rv.setAdapter(Data.movementItemAdapter);
 
+        progess = view.findViewById(R.id.exportProgress);
 
         Button btn_addMovement = view.findViewById(R.id.btn_AddMovement);
         btn_addMovement.setOnClickListener(new View.OnClickListener() {
@@ -50,7 +53,9 @@ public class MovementPage extends Fragment implements View.OnClickListener {
         btn_exportData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Data.exportData(getActivity().getApplicationContext());
+                progess.setIndeterminate(true);
+                progess.setVisibility(View.VISIBLE);
+                Data.exportData(progess);
             }
         });
 

@@ -62,32 +62,10 @@ public class SensorPage extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(v == btn_checkPairing){
-            Log.d(TAG+"/PairingCheck", "Prüfe Alle pairings");
-            BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-            BluetoothDevice btDevice;
-
-            for(Sensor sens : Data.sensors) {
-                String address = sens.getAddress();
-                Log.d(TAG+"/PairingCheck", "Prüfe Sensor " + address);
-                btDevice = mBtAdapter.getRemoteDevice(address);
-
-                if (btDevice != null) {
-                    if (btDevice.getBondState() == 12) {
-                        Log.d(TAG+"/PairingCheck", btDevice.getAddress() + " ->Pairing vorhanden.");
-                        sens.setPaired(true);
-                        Data.sensorItemAdapter.notifyDataSetChanged();
-                        Data.sensorItemAdapter.notifyItemChanged(Data.sensors.indexOf(sens));
-                    } else {
-                        Log.d(TAG+"/PairingCheck", btDevice.getAddress() + " ->Pairing Anfrage geht raus");
-                        btDevice.createBond();
-                    }
-                }
-                //Data.sensorItemAdapter.notifyDataSetChanged();
-            }
-
+            checkPairing();
         }
         if(v == btn_connectSensors){
-            if(Data.state == Data.State.INACTIVE) {
+            if(Data.state == Data.State.INACTIVE && checkPairing()) {
                 Log.d(TAG, "Verbinde Sensoren");
                 btn_connectSensors.setEnabled(false);
                 Data.connectSensors();
@@ -103,6 +81,33 @@ public class SensorPage extends Fragment implements View.OnClickListener {
             openSensorDialog(new Sensor("",""));
         }
     }
+
+    private boolean checkPairing(){
+        Log.d(TAG+"/PairingCheck", "Prüfe Alle pairings");
+        BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+        BluetoothDevice btDevice;
+
+        for(Sensor sens : Data.sensors) {
+            String address = sens.getAddress();
+            Log.d(TAG+"/PairingCheck", "Prüfe Sensor " + address);
+            btDevice = mBtAdapter.getRemoteDevice(address);
+
+            if (btDevice != null) {
+                if (btDevice.getBondState() == 12) {
+                    Log.d(TAG+"/PairingCheck", btDevice.getAddress() + " ->Pairing vorhanden.");
+                    sens.setPaired(true);
+                    Data.sensorItemAdapter.notifyDataSetChanged();
+                    Data.sensorItemAdapter.notifyItemChanged(Data.sensors.indexOf(sens));
+                } else {
+                    Log.d(TAG+"/PairingCheck", btDevice.getAddress() + " ->Pairing Anfrage geht raus");
+                    btDevice.createBond();
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public static void updateView(){
         final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {
