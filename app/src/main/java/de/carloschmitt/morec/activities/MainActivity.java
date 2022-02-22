@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
         Data.getInstance();
         Data.applicationContext = getApplicationContext();
+        Data.testShit();
 
         SensorPage sensorPage = new SensorPage();
         MovementPage movementPage = new MovementPage();

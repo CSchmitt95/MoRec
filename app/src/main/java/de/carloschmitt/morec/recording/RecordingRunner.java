@@ -32,6 +32,7 @@ public class RecordingRunner implements Runnable {
             for (Sensor sensor : Data.sensors) {
                 if(sensor.isActive()){
                     Quaternion q = sensor.getQuaternion();
+                    Log.d(TAG, q.toString());
                     samples.put(sensor, q);
                 } else{
                     throw new Exception();
