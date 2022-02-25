@@ -1,12 +1,8 @@
 package de.carloschmitt.morec.adapters;
 
-import android.app.Fragment;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -16,10 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import de.carloschmitt.morec.databinding.FragmentItemMovementBinding;
 import de.carloschmitt.morec.databinding.FragmentItemSensorBinding;
-import de.carloschmitt.morec.model.Movement;
-import de.carloschmitt.morec.model.Sensor;
+import de.carloschmitt.morec.model.setup.Sensor;
 
 public class SensorItemAdapter extends RecyclerView.Adapter<SensorItemAdapter.ViewHolder> {
     public interface OnItemClickListener {
@@ -47,8 +41,8 @@ public class SensorItemAdapter extends RecyclerView.Adapter<SensorItemAdapter.Vi
         public void bind(final Sensor item, final SensorItemAdapter.OnItemClickListener listener) {
             tv_sensor_name.setText(item.getName());
             cb_paired.setChecked(item.isPaired());
-            cb_active.setChecked(item.isActive());
-            tv_sensor_address.setText(item.getAddress());
+            //cb_active.setChecked(item.getIsStreaming());
+            tv_sensor_address.setText("TODO");
             sensor = item;
 
             cv_sensor.setOnClickListener(new View.OnClickListener() {

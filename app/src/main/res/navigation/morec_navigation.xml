@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/morec_navigation"
+    app:startDestination="@id/setupPage">
+    <fragment
+        android:id="@+id/setupPage"
+        android:name="de.carloschmitt.morec.view.SetupPage"
+        android:label="SetupPage"
+        tools:layout="@layout/fragment_page_setup">
+        <action
+            android:id="@+id/open_setupDialogue"
+            app:destination="@id/setupDialogue"
+            app:popUpTo="@id/setupPage" />
+    </fragment>
+    <fragment
+        android:id="@+id/recordingPage"
+        android:name="de.carloschmitt.morec.view.RecordPage"
+        android:label="recordPage"
+        tools:layout="@layout/fragment_page_record">
+        <action
+            android:id="@+id/open_add_movment"
+            app:destination="@id/addMovementDialogue"
+            app:popUpTo="@id/recordingPage"/>
+        <action
+            android:id="@+id/open_detail_movement"
+            app:destination="@id/detaiedMovementDialogue" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/classifcationPage"
+        android:name="de.carloschmitt.morec.view.ClassificationPage"
+        android:label="classificationPage"
+        tools:layout="@layout/fragment_page_classification"/>
+    <dialog
+        android:id="@+id/setupDialogue"
+        android:name="de.carloschmitt.morec.view.dialogues.SetupDialogue"
+        android:label="SetupDialogue"
+        tools:layout="@layout/fragment_dialog_sensor"/>
+    <dialog
+        android:id="@+id/addMovementDialogue"
+        android:name="de.carloschmitt.morec.view.dialogues.AddMovementDialog"
+        android:label="addMovementDialogue"/>
+    <dialog
+        android:id="@+id/detaiedMovementDialogue"
+        android:name="de.carloschmitt.morec.view.dialogues.DetailedMovementDialogue"
+        android:label="RecordingDialogue" />
+</navigation>

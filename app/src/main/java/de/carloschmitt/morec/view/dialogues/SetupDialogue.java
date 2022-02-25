@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.dialogs;
+package de.carloschmitt.morec.view.dialogues;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,13 +12,11 @@ import android.widget.EditText;
 import androidx.fragment.app.DialogFragment;
 
 import de.carloschmitt.morec.R;
-import de.carloschmitt.morec.model.Data;
-import de.carloschmitt.morec.model.Movement;
-import de.carloschmitt.morec.model.Sensor;
-import de.carloschmitt.morec.pages.MovementPage;
-import de.carloschmitt.morec.pages.SensorPage;
+import de.carloschmitt.morec.ApplicationController;
+import de.carloschmitt.morec.model.setup.Sensor;
+import de.carloschmitt.morec.view.SetupPage;
 
-public class SensorDialog extends DialogFragment {
+public class SetupDialogue extends DialogFragment {
     private static final String TAG = "MovementDialogFragment";
     static Sensor sensor;
 
@@ -27,8 +25,8 @@ public class SensorDialog extends DialogFragment {
         return inflater.inflate(R.layout.fragment_dialog_sensor, container);
     }
 
-    public static SensorDialog newInstance(Sensor s) {
-        SensorDialog frag = new SensorDialog();
+    public static SetupDialogue newInstance(Sensor s) {
+        SetupDialogue frag = new SetupDialogue();
         Bundle args = new Bundle();
         frag.setArguments(args);
         frag.setCancelable(false);
@@ -38,7 +36,7 @@ public class SensorDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        SensorPage sensorPage = (SensorPage) getParentFragment();
+        SetupPage setupPage = (SetupPage) getParentFragment();
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_dialog_sensor, null);
 
@@ -46,7 +44,7 @@ public class SensorDialog extends DialogFragment {
         editTextSensorName.setText(sensor.getName());
 
         EditText editTextSensorAddress = view.findViewById(R.id.et_SensorAddress);
-        editTextSensorAddress.setText(sensor.getAddress());
+        //editTextSensorAddress.setText(sensor.getAddress());
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setTitle("Sensordetails");
@@ -54,9 +52,9 @@ public class SensorDialog extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 sensor.setName(editTextSensorName.getText().toString());
-                sensor.setAddress(editTextSensorAddress.getText().toString());
-                if(!Data.sensors.contains(sensor)) Data.sensors.add(sensor);
-                Data.sensorItemAdapter.notifyItemChanged(Data.sensors.indexOf(sensor));
+                //sensor.setAddress(editTextSensorAddress.getText().toString());
+                if(!ApplicationController.sensors.contains(sensor)) ApplicationController.sensors.add(sensor);
+                ApplicationController.sensorItemAdapter.notifyItemChanged(ApplicationController.sensors.indexOf(sensor));
             }
         });
         alertDialogBuilder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
@@ -64,16 +62,16 @@ public class SensorDialog extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 if (dialog != null) {
                     dialog.dismiss();
-                    Data.sensorItemAdapter.notifyItemChanged(Data.sensors.indexOf(sensor));
+                    ApplicationController.sensorItemAdapter.notifyItemChanged(ApplicationController.sensors.indexOf(sensor));
                 }
             }
         });
         alertDialogBuilder.setNeutralButton("Löschen", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(Data.sensors.contains(sensor)){
-                    Data.sensors.remove(sensor);
-                    Data.sensorItemAdapter.notifyDataSetChanged();
+                if(ApplicationController.sensors.contains(sensor)){
+                    ApplicationController.sensors.remove(sensor);
+                    ApplicationController.sensorItemAdapter.notifyDataSetChanged();
                 }
             }
         });

@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.recording;
+package de.carloschmitt.morec.model.recording;
 
 import android.util.Log;
 
@@ -8,9 +8,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import de.carloschmitt.morec.dialogs.MovementDialog;
-import de.carloschmitt.morec.model.Data;
-import de.carloschmitt.morec.model.Movement;
+import de.carloschmitt.morec.model.State;
+import de.carloschmitt.morec.ApplicationController;
 
 public class RecordingScheduler implements Runnable{
     private final String TAG = "RecordingScheduler";
@@ -28,9 +27,9 @@ public class RecordingScheduler implements Runnable{
         schedulePolling();
         stopWhenDone();
 
-        Data.state = Data.State.CONNECTED;
+        ApplicationController.state = State.CONNECTED;
         Log.d(TAG, "Recording Scheduler beendet.");
-        MovementDialog.refreshTexts();
+        //RecordingDialogue.refreshTexts();
     }
 
     private void stopWhenDone(){
@@ -44,7 +43,7 @@ public class RecordingScheduler implements Runnable{
 
     private ScheduledFuture<?> schedulePolling(){
         final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        future = scheduler.scheduleAtFixedRate(new RecordingRunner(latch, movement),0,1000/Data.SAMPLES_PER_SECOND, TimeUnit.MILLISECONDS);
+        future = scheduler.scheduleAtFixedRate(new RecordingRunner(latch, movement),0,1000/ ApplicationController.SAMPLES_PER_SECOND, TimeUnit.MILLISECONDS);
         return future;
     }
 

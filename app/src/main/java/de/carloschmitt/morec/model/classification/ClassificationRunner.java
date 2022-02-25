@@ -1,15 +1,14 @@
-package de.carloschmitt.morec.classification;
+package de.carloschmitt.morec.model.classification;
 
 import android.util.Log;
 
 import com.meicke.threeSpaceSensorAndroidAPI.Quaternion;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import de.carloschmitt.morec.model.Data;
-import de.carloschmitt.morec.model.Sensor;
+import de.carloschmitt.morec.ApplicationController;
+import de.carloschmitt.morec.model.setup.Sensor;
 
 public class ClassificationRunner implements Runnable{
     private static final String TAG = "ClassificationRunner";
@@ -25,13 +24,8 @@ public class ClassificationRunner implements Runnable{
     public void run() {
         try {
             HashMap<Sensor, Quaternion> samples = new HashMap<>();
-            for (Sensor sensor : Data.sensors) {
-                if(sensor.isActive()){
-                    Quaternion q = sensor.getQuaternion();
-                    samples.put(sensor, q);
-                } else{
-                    throw new Exception();
-                }
+            for (Sensor sensor : ApplicationController.sensors) {
+
             }
             if(!buffer.addSample(samples)){
                 latch.countDown();

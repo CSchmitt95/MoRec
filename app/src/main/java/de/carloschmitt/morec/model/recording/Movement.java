@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.model;
+package de.carloschmitt.morec.model.recording;
 
 
 import android.util.Log;
@@ -10,33 +10,33 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.carloschmitt.morec.dialogs.MovementDialog;
-import de.carloschmitt.morec.recording.Recording;
+import de.carloschmitt.morec.ApplicationController;
+import de.carloschmitt.morec.model.setup.Sensor;
 
 public  class Movement {
     private static final String TAG = "Movement";
-    public String name;
+    public String label;
     public boolean single_window;
     private List<Recording> recordings;
     Map<Sensor, Recording> currentRecordings;
     int currentRecordingSize;
     int currentRecordId;
 
-    public Movement(String name, boolean single_window) {
+    public Movement(String label, boolean single_window) {
         this.recordings = new LinkedList<>();
         this.single_window = single_window;
-        this.name = name;
+        this.label = label;
         currentRecordings = new HashMap<>();
         currentRecordingSize = 0;
         currentRecordId = 0;
     }
 
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getRecordingCount() {
@@ -50,14 +50,14 @@ public  class Movement {
                     done.add(recording.getSession_id());
                 }
             }
-            return (sum_samples/Data.SAMPLES_PER_SECOND) + " Sekunden (" + recordings.size() + " Aufnahmen)";
+            return (sum_samples/ ApplicationController.SAMPLES_PER_SECOND) + " Sekunden (" + recordings.size() + " Aufnahmen)";
         }
         //return tapes.size() + " (" + (int) Math.ceil(tapes.size()/(Data.SAMPLES_PER_SECOND*Data.WINDOW_SIZE_IN_S)) +" unique)";
     }
 
     @Override
     public String toString() {
-        return name;
+        return label;
     }
 
 
@@ -81,9 +81,9 @@ public  class Movement {
             }
         }
         currentRecordingSize++;
-        if(currentRecordingSize % Data.SAMPLES_PER_SECOND == 0 ) MovementDialog.showStatusText(currentRecordingSize/Data.SAMPLES_PER_SECOND);
+        //if(currentRecordingSize % ApplicationController.SAMPLES_PER_SECOND == 0 ) RecordingDialogue.showStatusText(currentRecordingSize/ ApplicationController.SAMPLES_PER_SECOND);
 
-        if(single_window && currentRecordingSize == Data.MAX_SAMPLES) {
+        if(single_window && currentRecordingSize == ApplicationController.MAX_SAMPLES) {
             return true;
         }
         return false;

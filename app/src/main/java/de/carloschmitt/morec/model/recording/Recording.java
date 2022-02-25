@@ -1,13 +1,12 @@
-package de.carloschmitt.morec.recording;
+package de.carloschmitt.morec.model.recording;
 
 import com.meicke.threeSpaceSensorAndroidAPI.Quaternion;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import de.carloschmitt.morec.model.Data;
-import de.carloschmitt.morec.model.Movement;
-import de.carloschmitt.morec.model.Sensor;
+import de.carloschmitt.morec.ApplicationController;
+import de.carloschmitt.morec.model.setup.Sensor;
 
 public class Recording {
     private static final String TAG = "Recording";
@@ -38,7 +37,7 @@ public class Recording {
     }
 
     public boolean isFull(){
-        if(movement.isSingle_window() && quaternions.size() == Data.MAX_SAMPLES) return true;
+        if(movement.isSingle_window() && quaternions.size() == ApplicationController.MAX_SAMPLES) return true;
         return false;
     }
 

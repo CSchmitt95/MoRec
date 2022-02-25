@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.recording;
+package de.carloschmitt.morec.model.recording;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -11,10 +11,9 @@ import com.meicke.threeSpaceSensorAndroidAPI.Exceptions.TssConnectionException;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.carloschmitt.morec.model.Data;
-import de.carloschmitt.morec.model.Movement;
-import de.carloschmitt.morec.model.Sensor;
-import de.carloschmitt.morec.pages.SensorPage;
+import de.carloschmitt.morec.ApplicationController;
+import de.carloschmitt.morec.model.State;
+import de.carloschmitt.morec.model.setup.Sensor;
 
 public class Recorder {
     private final String TAG = "Recorder";
@@ -30,32 +29,21 @@ public class Recorder {
         connectorThread.start();
     }
 
-    public void destroy(){
-        for (Sensor sensor : Data.sensors) {
-            try {
-                sensor.disconnect();
-            } catch (TssConnectionException e) {
-                e.printStackTrace();
-            }
-        }
-        SensorPage.updateView();
-    }
-
     public boolean startRecording(Movement movement){
-        if(Data.state == Data.State.CONNECTED){
+        if(ApplicationController.state == State.CONNECTED){
             this.movement = movement;
-            for(Sensor s : Data.sensors) s.tare();
+            //for(Sensor s : ApplicationController.sensors) s.setCurrentOrientationAsTare();
             recordingScheduler = new RecordingScheduler(movement);
             Thread recorderThread = new Thread(recordingScheduler);
             recorderThread.start();
-            Data.state = Data.State.RECORDING;
+            ApplicationController.state = State.RECORDING;
             return true;
         }
         return false;
     }
 
     public void stopRecording(){
-        if(Data.state == Data.State.RECORDING){
+        if(ApplicationController.state == State.RECORDING){
             recordingScheduler.latch.countDown();
             movement.finishCurrentRecordings();
             recordingScheduler = null;
@@ -67,7 +55,7 @@ public class Recorder {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(Data.applicationContext,  message , Toast.LENGTH_SHORT).show();
+                Toast.makeText(ApplicationController.applicationContext,  message , Toast.LENGTH_SHORT).show();
             }
         }, 100);
     }
@@ -77,37 +65,37 @@ public class Recorder {
         @Override
         public void run() {
             List<Sensor> connected = new LinkedList<>();
-            for (Sensor sensor : Data.sensors) {
+            for (Sensor sensor : ApplicationController.sensors) {
                 String name = sensor.getName();
                 try {
-                    sensor.connect();
+                    //sensor.connect();
                     connected.add(sensor);
                     final Handler handler = new Handler(Looper.getMainLooper());
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            int pos = Data.sensors.indexOf(sensor);
-                            Data.sensorItemAdapter.notifyItemChanged(pos);
-                            Toast.makeText(Data.applicationContext,  sensor.getName() + " verbunden", Toast.LENGTH_SHORT).show();
+                            int pos = ApplicationController.sensors.indexOf(sensor);
+                            ApplicationController.sensorItemAdapter.notifyItemChanged(pos);
+                            Toast.makeText(ApplicationController.applicationContext,  sensor.getName() + " verbunden", Toast.LENGTH_SHORT).show();
                         }
                     }, 100);
-                } catch (TssCommunicationException | TssConnectionException e) {
+                } catch (Exception e) {
                     toastToMain("Fehler beim Verbinden mit " + sensor.getName());
                     Log.d(TAG + "@" + name, "Fehler beim Verbindungsaufbau!");
                     for(Sensor s : connected){
                         try{
-                            s.disconnect();
+                            //s.disconnectSocket();
                         } catch (Exception fe){
                             Log.d(TAG, "Fataler Fehler deluxe: " + e.getLocalizedMessage());
                         }
                     }
-                    Data.state = Data.State.INACTIVE;
+                    ApplicationController.state = State.INACTIVE;
                     e.printStackTrace();
                     return;
                 }
             }
             toastToMain("Alle Sensoren verbunden");
-            Data.state = Data.State.CONNECTED;
+            ApplicationController.state = State.CONNECTED;
         }
     }
 }

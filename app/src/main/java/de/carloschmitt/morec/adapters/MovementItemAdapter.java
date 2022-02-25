@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import de.carloschmitt.morec.databinding.FragmentItemMovementBinding;
-import de.carloschmitt.morec.model.Movement;
+import de.carloschmitt.morec.model.recording.Movement;
 
 public class MovementItemAdapter extends RecyclerView.Adapter<MovementItemAdapter.ViewHolder> {
 
@@ -29,12 +29,12 @@ public class MovementItemAdapter extends RecyclerView.Adapter<MovementItemAdapte
         public ViewHolder(FragmentItemMovementBinding binding) {
             super(binding.getRoot());
             tv_movement_name = binding.movementName;
-            tv_movement_samplecount = binding.movementSc;
+            tv_movement_samplecount = binding.movementCount;
             cv_movement = binding.cvMovement;
         }
 
         public void bind(final Movement item, final OnItemClickListener listener) {
-            tv_movement_name.setText(item.getName());
+            tv_movement_name.setText(item.getLabel());
             tv_movement_samplecount.setText(item.getRecordingCount());
             movement = item;
             cv_movement.setOnClickListener(new View.OnClickListener() {

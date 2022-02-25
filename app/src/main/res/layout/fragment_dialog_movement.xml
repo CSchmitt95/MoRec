@@ -1,50 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <LinearLayout
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="DetailedMovementDialogViewModel"
+            type="de.carloschmitt.morec.viewmodel.DetailedMovementDialogViewModel" />
+        <variable
+            name="ConnectionStateViewModel"
+            type="de.carloschmitt.morec.viewmodel.ConnectionStateViewModel" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/editTextMovementName"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Bewegungsbezeichnung"
-            android:inputType="textPersonName" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <CheckBox
-            android:id="@+id/cb_event"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ereginis" />
+            <EditText
+                android:id="@+id/editTextMovementName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Bewegungsname"
+                android:text="@={DetailedMovementDialogViewModel.movementName}"
+                android:inputType="textPersonName" />
 
-        <TextView
-            android:id="@+id/tv_sampleCount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="1203 Fenster"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+            <TextView
+                android:id="@+id/tv_sampleCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1203 Fenster"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-        <TextView
-            android:id="@+id/tv_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center|top"
+                android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btn_record2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="Aufnahme Starten" />
-    </LinearLayout>
+                <CheckBox
+                    android:id="@+id/cb_event"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="Hold to record" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <Button
+                    android:id="@+id/btn_record"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:padding="10dp"
+                    android:enabled="@{ConnectionStateViewModel.record_button_enabled}"
+                    android:text="@{ConnectionStateViewModel.record_button_text}" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

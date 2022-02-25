@@ -1,20 +1,17 @@
-package de.carloschmitt.morec.classification;
+package de.carloschmitt.morec.model.classification;
 
 
-import android.service.quickaccesswallet.QuickAccessWalletService;
 import android.util.Log;
 
 import com.meicke.threeSpaceSensorAndroidAPI.Quaternion;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
-import de.carloschmitt.morec.model.Data;
-import de.carloschmitt.morec.model.Sensor;
+import de.carloschmitt.morec.ApplicationController;
+import de.carloschmitt.morec.model.setup.Sensor;
 
 public class ClassificationBuffer {
     private static final String TAG = "ClassificationBuffer";
@@ -25,7 +22,7 @@ public class ClassificationBuffer {
     public ClassificationBuffer(){
         data = new HashMap<>();
         sensor_saturated = new HashMap<>();
-        for(Sensor s : Data.sensors){
+        for(Sensor s : ApplicationController.sensors){
             data.put(s, new LinkedList<>());
             sensor_saturated.put(s, false);
         }
@@ -38,7 +35,7 @@ public class ClassificationBuffer {
             qList.add(new_data.get(s));
             if(sensor_saturated.get(s)) qList.remove(0);
             else {
-                if ( qList.size() == Data.SAMPLES_PER_SECOND * Data.WINDOW_SIZE_IN_S + 1 ){
+                if ( qList.size() == ApplicationController.SAMPLES_PER_SECOND * ApplicationController.WINDOW_SIZE_IN_S + 1 ){
                     sensor_saturated.put(s, true);
                 }
             }
@@ -48,7 +45,7 @@ public class ClassificationBuffer {
 
     public boolean isSaturated(){
         boolean ret = true;
-        for(Sensor s : Data.sensors){
+        for(Sensor s : ApplicationController.sensors){
             if(sensor_saturated.get(s) == false) ret = false;
         }
         return ret;
@@ -56,15 +53,15 @@ public class ClassificationBuffer {
 
 
     public float[] getBuffer() {
-        float[] ret = new float[Data.FLOATS_PER_WINDOW * Data.sensors.size()];
+        float[] ret = new float[ApplicationController.FLOATS_PER_WINDOW * ApplicationController.sensors.size()];
         String[] sensorOrder = {"Gürtel", "Handgelenk"};
 
-        for(int s_count = 0; s_count < Data.sensors.size(); s_count++){
+        for(int s_count = 0; s_count < ApplicationController.sensors.size(); s_count++){
             String name = sensorOrder[s_count];
             Log.d(TAG,"Lese Daten von sensor " + name);
             List<Quaternion> sensor_data = null;
 
-            for(Sensor data_s : Data.sensors){
+            for(Sensor data_s : ApplicationController.sensors){
                 if(data_s.getName() == name) sensor_data = data.get(data_s);
             }
             if(sensor_data == null) {
@@ -83,21 +80,21 @@ public class ClassificationBuffer {
             }
             Log.d(TAG, "Size of diffbuffer: " + diffQuaternions.size());
 
-            for(int j = 0; j < Data.FLOATS_PER_WINDOW; j++){
+            for(int j = 0; j < ApplicationController.FLOATS_PER_WINDOW; j++){
                 if( j % 4 == 0) ret[s_count*1500 + j] = sensor_data.get((int) (j/4)).getW();
                 else if( j % 4 == 1) ret[s_count*1500 + j] = sensor_data.get((int) (j/4)).getX();
                 else if( j % 4 == 2) ret[s_count*1500 + j] = sensor_data.get((int) (j/4)).getY();
                 else if( j % 4 == 3) ret[s_count*1500 + j] = sensor_data.get((int) (j/4)).getZ();
             }
 
-            for (int j = 0; j < Data.SAMPLES_PER_SECOND * Data.WINDOW_SIZE_IN_S; j++) {
+            for (int j = 0; j < ApplicationController.SAMPLES_PER_SECOND * ApplicationController.WINDOW_SIZE_IN_S; j++) {
                 ret[s_count*1500 + j * 4 + 0] = diffQuaternions.get(j).getW();
                 ret[s_count*1500 + j * 4 + 1] = diffQuaternions.get(j).getX();
                 ret[s_count*1500 + j * 4 + 2] = diffQuaternions.get(j).getY();
                 ret[s_count*1500 + j * 4 + 3] = diffQuaternions.get(j).getZ();
             }
 
-            for (int i = 1 ; i < Data.SAMPLES_PER_SECOND * Data.WINDOW_SIZE_IN_S; i++) {
+            for (int i = 1; i < ApplicationController.SAMPLES_PER_SECOND * ApplicationController.WINDOW_SIZE_IN_S; i++) {
                 ret[s_count*1500 + i * 4 + 0] = ret[i * 4 + 0] - ret[0];
                 ret[s_count*1500 + i * 4 + 1] = ret[i * 4 + 1] - ret[1];
                 ret[s_count*1500 + i * 4 + 2] = ret[i * 4 + 2] - ret[2];

@@ -1,11 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/movementPage"
+        android:id="@+id/recordingPage"
         android:enabled="true"
         android:icon="@android:drawable/stat_notify_sdcard"
         android:title="Bewegungen" />
     <item
-        android:id="@+id/sensorPage"
+        android:id="@+id/setupPage"
         android:enabled="true"
         android:icon="@android:drawable/ic_lock_idle_charging"
         android:title="Sensoren" />

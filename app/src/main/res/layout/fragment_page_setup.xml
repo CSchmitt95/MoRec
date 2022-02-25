@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="SetupPageViewModel"
+            type="de.carloschmitt.morec.viewmodel.SetupPageViewModel" />
+        <variable
+            name="ConnectionStateViewModel"
+            type="de.carloschmitt.morec.viewmodel.ConnectionStateViewModel" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.recyclerview.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_sensors"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -42,21 +52,18 @@
                 android:id="@+id/btn_addSensor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sensor hinzufügen" />
+                android:text="Sensor hinzufügen"
+                android:enabled="true"/>
 
             <Button
-                android:id="@+id/btn_checkPairing"
+                android:id="@+id/btn_connect_sensors"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="paring Prüfen" />
-
-            <Button
-                android:id="@+id/btn_checkRecording"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Verbinden" />
+                android:text="@{ConnectionStateViewModel.connect_button_text}"
+                android:enabled="@{ConnectionStateViewModel.connect_button_enabled}"/>
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
