@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
@@ -26,40 +27,28 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import de.carloschmitt.morec.databinding.FragmentPageClassificationBinding;
+import de.carloschmitt.morec.databinding.PageClassificationBinding;
 import de.carloschmitt.morec.model.classification.ClassificationBuffer;
 import de.carloschmitt.morec.model.classification.ClassificationRunner;
 import de.carloschmitt.morec.ml.GrtelHandgelenk;
 import de.carloschmitt.morec.ApplicationController;
-import de.carloschmitt.morec.model.State;
-import de.carloschmitt.morec.model.setup.Sensor;
+import de.carloschmitt.morec.repository.util.State;
+import de.carloschmitt.morec.viewmodel.ClassificationPageViewModel;
 
 
 public class ClassificationPage extends Fragment {
     Context context;
-    FragmentPageClassificationBinding binding;
+    PageClassificationBinding binding;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentPageClassificationBinding.inflate(inflater, container, false);
+        binding = PageClassificationBinding.inflate(inflater, container, false);
+        ClassificationPageViewModel classificationPageViewModel = new ViewModelProvider(getActivity()).get(ClassificationPageViewModel.class);
+        binding.setClassificationPageViewModel(classificationPageViewModel);
+        binding.setLifecycleOwner(getViewLifecycleOwner());
 
         if(ApplicationController.state != State.CONNECTED) binding.btnStartstop.setEnabled(false);
 
         context = binding.getRoot().getContext();
-        binding.btnStartstop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(ApplicationController.state == State.CONNECTED){
-                    ApplicationController.state = State.CLASSIFYING;
-                    binding.btnStartstop.setText("STOP");
-                    Thread classificationThread = new Thread(new classificationRunner());
-                    classificationThread.start();
-                }
-                else if(ApplicationController.state == State.CLASSIFYING){
-                    ApplicationController.state = State.CONNECTED;
-                    binding.btnStartstop.setText("START");
-                }
-            }
-        });
         return binding.getRoot();
     }
 
@@ -71,11 +60,8 @@ public class ClassificationPage extends Fragment {
         @Override
         public void run() {
             try {
-
                 //List<String> labels = Files.readAllLines("");
-
                 GrtelHandgelenk model = GrtelHandgelenk.newInstance(context);
-
                 TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, ApplicationController.FLOATS_PER_WINDOW* ApplicationController.sensors.size()}, DataType.FLOAT32);
 
                 Log.d(TAG, "Tariere Sensoren...");
@@ -127,7 +113,7 @@ public class ClassificationPage extends Fragment {
                 Log.e(TAG, e.toString());
                 // TODO Handle the exception
             }
-            Log.d(TAG, "Classification beeindet.");
+            Log.d(TAG, "Classification beendet.");
             try
             {
                 String foldername = new SimpleDateFormat("yyyyMMdd_HH:mm").format(new Date());

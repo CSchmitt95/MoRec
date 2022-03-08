@@ -11,17 +11,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import de.carloschmitt.morec.model.recording.UIMovement;
-import de.carloschmitt.morec.viewmodel.MovementListViewModel;
+import de.carloschmitt.morec.repository.model.Label;
+import de.carloschmitt.morec.viewmodel.LabelPageViewModel;
 
-public class AddMovementDialog extends DialogFragment {
-    private static final String TAG = "AddNewMovementDialog";
+public class AddLabelDialogue extends DialogFragment {
+    private static final String TAG = "AddLabelDialogue";
 
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        MovementListViewModel movementListViewModel = new ViewModelProvider(getActivity()).get(MovementListViewModel.class);
-
+        LabelPageViewModel labelPageViewModel = new ViewModelProvider(getActivity()).get(LabelPageViewModel.class);
 
         final EditText input = new EditText(getActivity());
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -32,9 +31,8 @@ public class AddMovementDialog extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 String input_text = input.getText().toString();
                 if( input_text != null && !input_text.trim().isEmpty()) {
-                    UIMovement uiMovement = new UIMovement();
-                    uiMovement.setName(input_text);
-                    movementListViewModel.addMovement(uiMovement);
+                    Label label = new Label(input_text);
+                    labelPageViewModel.addLabel(label);
                 }
             }
         });

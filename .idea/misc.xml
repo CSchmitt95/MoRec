@@ -7,6 +7,8 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_record.xml" value="0.24427083333333333" />
         <entry key="app/src/main/res/layout/activity_sensor.xml" value="0.24427083333333333" />
+        <entry key="app/src/main/res/layout/dialog_label_details.xml" value="0.23229166666666667" />
+        <entry key="app/src/main/res/layout/dialog_sensor_details.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/layout/fragment_classificationpage.xml" value="0.13576494427558258" />
         <entry key="app/src/main/res/layout/fragment_detailmovement.xml" value="0.24427083333333333" />
         <entry key="app/src/main/res/layout/fragment_dialog_movement.xml" value="0.24427083333333333" />
@@ -23,6 +25,10 @@
         <entry key="app/src/main/res/layout/fragment_sensor.xml" value="0.42092398411559895" />
         <entry key="app/src/main/res/layout/fragment_sensorlist.xml" value="0.2776268115942029" />
         <entry key="app/src/main/res/layout/fragment_sensorpage.xml" value="0.2776268115942029" />
+        <entry key="app/src/main/res/layout/item_label.xml" value="0.2653985507246377" />
+        <entry key="app/src/main/res/layout/item_sensor.xml" value="0.23229166666666667" />
+        <entry key="app/src/main/res/layout/page_classification.xml" value="0.2653985507246377" />
+        <entry key="app/src/main/res/layout/page_setup.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="0.2791666666666667" />
       </map>
     </option>

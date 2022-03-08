@@ -5,54 +5,72 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
+import de.carloschmitt.morec.R;
+import de.carloschmitt.morec.databinding.ItemSensorBinding;
+import de.carloschmitt.morec.repository.model.UISensor;
+import de.carloschmitt.morec.view.activities.MainActivity;
+import de.carloschmitt.morec.viewmodel.SetupPageViewModel;
 
-import de.carloschmitt.morec.databinding.FragmentItemSensorBinding;
-import de.carloschmitt.morec.model.setup.UISensor;
+public class UISensorAdapter extends ListAdapter<UISensor,RecyclerView.ViewHolder> {
+    private final String TAG = "UISensorAdapter";
+    SetupPageViewModel setupPageViewModel;
 
-public class UISensorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
-
-    ArrayList<UISensor> uiSensorArrayList;
-
-    public UISensorAdapter(){
-        this.uiSensorArrayList = new ArrayList<>();
+    public UISensorAdapter(SetupPageViewModel setupPageViewModel){
+        super(DIFF_CALLBACK);
+        this.setupPageViewModel = setupPageViewModel;
     }
 
-    public void updateList(ArrayList<UISensor> new_list){
-        this.uiSensorArrayList.clear();
-        this.uiSensorArrayList = new_list;
-        notifyDataSetChanged();
-    }
+    public static final DiffUtil.ItemCallback<UISensor> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<UISensor>() {
+                public String TAG = "DIFF_CALLBACK";
+
+                @Override
+                public boolean areItemsTheSame(@NonNull UISensor oldItem, @NonNull UISensor newItem) {
+                    return oldItem.getName().getValue().equals(newItem.getName().getValue());
+                }
+                @Override
+                public boolean areContentsTheSame(@NonNull UISensor oldItem, @NonNull UISensor newIte) {
+                    return true;
+                }
+            };
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new UISensorViewHolder(FragmentItemSensorBinding.inflate(LayoutInflater.from(parent.getContext())));
+        ItemSensorBinding binding = ItemSensorBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        binding.setLifecycleOwner((MainActivity) parent.getContext());
+        BindableViewholder bindableViewholder = new BindableViewholder(binding);
+        bindableViewholder.itemSensorBinding.cvSensor.setOnClickListener(bindableViewholder);
+        return bindableViewholder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        UISensor uiSensor = uiSensorArrayList.get(position);
-        UISensorViewHolder uiSensorViewHolder = (UISensorViewHolder) holder;
-        uiSensorViewHolder.binding.sensorName.setText(uiSensor.getName());
-        uiSensorViewHolder.binding.sensorAddress.setText(uiSensor.getAddress());
-        uiSensorViewHolder.binding.chkPaired.setChecked(uiSensor.isPaired());
-        uiSensorViewHolder.binding.chkActive.setChecked(uiSensor.isConnected());
+        ((BindableViewholder) holder).itemSensorBinding.setUiSensor(getItem(position));
     }
 
-    @Override
-    public int getItemCount() {
-        return uiSensorArrayList.size();
+    public UISensor getUISensorAt(int pos){
+        return getItem(pos);
     }
 
-    class UISensorViewHolder extends RecyclerView.ViewHolder {
-        FragmentItemSensorBinding binding;
-        public UISensorViewHolder(FragmentItemSensorBinding binding) {
+    public class BindableViewholder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        ItemSensorBinding itemSensorBinding;
+
+        BindableViewholder(ItemSensorBinding binding) {
             super(binding.getRoot());
-            this.binding = binding;
+            this.itemSensorBinding = binding;
+        }
+
+        @Override
+        public void onClick(View v) {
+            UISensor clicked = itemSensorBinding.getUiSensor();
+            setupPageViewModel.setSelectedSensor(clicked);
+            Navigation.findNavController(v).navigate(R.id.open_setupDialogue);
         }
     }
 }

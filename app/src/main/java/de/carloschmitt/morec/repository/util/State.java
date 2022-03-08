@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.model;
+package de.carloschmitt.morec.repository.util;
 
 public enum State {
     INACTIVE,
@@ -6,5 +6,6 @@ public enum State {
     CONNECTED,
     RECORDING,
     CLASSIFYING,
-    EXPORTING
+    EXPORTING,
+    DISCONNECTING
 }

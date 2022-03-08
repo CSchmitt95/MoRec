@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.model;
+package de.carloschmitt.morec.repository.util;
 
 public class Constants {
     public static final String TAG = "Data";
@@ -10,4 +10,6 @@ public class Constants {
     public static final int MAX_SAMPLES = WINDOW_SIZE_IN_S * SAMPLES_PER_SECOND + 2 * OVERLAP ;
     public static final int QUATERNIONS_PER_WINDOW = SAMPLES_PER_SECOND * WINDOW_SIZE_IN_S;
     public static final int FLOATS_PER_WINDOW = QUATERNIONS_PER_WINDOW * 4;
+    public static final int CLASSIFICATIONS_PER_SECOND = 1;
+    public static final long CLASSIFICATION_COOLDOWN = 1000/CLASSIFICATIONS_PER_SECOND;
 }

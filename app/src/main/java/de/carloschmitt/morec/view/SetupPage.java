@@ -6,59 +6,66 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import de.carloschmitt.morec.R;
 import de.carloschmitt.morec.adapters.UISensorAdapter;
-import de.carloschmitt.morec.databinding.FragmentPageSetupBinding;
-import de.carloschmitt.morec.model.setup.Sensor;
-import de.carloschmitt.morec.model.setup.UISensor;
-import de.carloschmitt.morec.view.dialogues.SetupDialogue;
+import de.carloschmitt.morec.databinding.PageSetupBinding;
+import de.carloschmitt.morec.repository.MoRecRepository;
+import de.carloschmitt.morec.repository.model.UISensor;
 import de.carloschmitt.morec.viewmodel.ConnectionStateViewModel;
 import de.carloschmitt.morec.viewmodel.SetupPageViewModel;
 
 public class SetupPage extends Fragment {
-    private static final String TAG = "SensorPageFragment";
-    FragmentPageSetupBinding binding;
-    Context context;
+    private static final String TAG = "SetupPage";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        context = getActivity();
-        binding = FragmentPageSetupBinding.inflate(inflater);
+        PageSetupBinding binding = PageSetupBinding.inflate(inflater);
 
-        //ViewModels
+        //ViewModel und observation.
         SetupPageViewModel setupPageViewModel = new ViewModelProvider(getActivity()).get(SetupPageViewModel.class);
-        ConnectionStateViewModel connectionStateViewmodel = new ViewModelProvider(getActivity()).get(ConnectionStateViewModel.class);
-        binding.setConnectionStateViewModel(connectionStateViewmodel);
         binding.setSetupPageViewModel(setupPageViewModel);
         binding.setLifecycleOwner(getViewLifecycleOwner());
 
         //RecylcerView
-        binding.rvSensors.setLayoutManager(new LinearLayoutManager(context));
-        UISensorAdapter uiSensorAdapter = new UISensorAdapter();
+        binding.rvSensors.setLayoutManager(new LinearLayoutManager(getActivity()));
+        UISensorAdapter uiSensorAdapter = new UISensorAdapter(setupPageViewModel);
+        setupPageViewModel.getUiSensors().observe(getViewLifecycleOwner(), list -> uiSensorAdapter.submitList(new ArrayList<>(list)));
         binding.rvSensors.setAdapter(uiSensorAdapter);
 
-        setupPageViewModel.getUiSensorList().observe(getViewLifecycleOwner(), new Observer<ArrayList<UISensor>>() {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
-            public void onChanged(ArrayList<UISensor> uiSensors) {
-                uiSensorAdapter.updateList(uiSensors);
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
             }
-        });
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                if(setupPageViewModel.getAddSensor_button_enabled().getValue()){
+                    setupPageViewModel.deleteUISensor(uiSensorAdapter.getUISensorAt(viewHolder.getBindingAdapterPosition()));
+                    //Toast.makeText(getActivity(), "Sensor entfernt", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(getActivity(), "Sensor kann gerade nicht entfernt werden", Toast.LENGTH_SHORT).show();
+                    //uiSensorAdapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
+                }
+            }
+        }).attachToRecyclerView(binding.rvSensors);
 
         return binding.getRoot();
     }
 
-
-    private void openSensorDialog(Sensor sensor){
-        Log.d(TAG, sensor.toString());
-        SetupDialogue setupDialogue = SetupDialogue.newInstance(sensor);
-        setupDialogue.setCancelable(false);
-        setupDialogue.show(getChildFragmentManager(), "fragment_movementdialog");
-    }
 }

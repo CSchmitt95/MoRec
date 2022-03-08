@@ -2,14 +2,12 @@
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
     <data>
+        <import type="de.carloschmitt.morec.R"/>
+        <import type="androidx.navigation.Navigation"/>
         <variable
-            name="MovementListViewModel"
-            type="de.carloschmitt.morec.viewmodel.MovementListViewModel" />
-        <variable
-            name="ConnectionStateViewModel"
-            type="de.carloschmitt.morec.viewmodel.ConnectionStateViewModel" />
+            name="LabelPageViewModel"
+            type="de.carloschmitt.morec.viewmodel.LabelPageViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,8 +24,8 @@
             android:paddingTop="10sp"
             android:paddingBottom="125sp"
             app:layoutManager="LinearLayoutManager"
-            tools:context=".view.RecordPage"
-            tools:listitem="@layout/fragment_item_movement" />
+            tools:context=".view.LabelPage"
+            tools:listitem="@layout/item_label" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -61,18 +59,22 @@
                     android:visibility="gone" />
 
                 <Button
-                    android:id="@+id/btn_Export"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0"
-                    android:text="Daten exportieren" />
-
-                <Button
                     android:id="@+id/btn_AddMovement"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
-                    android:text="Bewegung Hinzufügen" />
+                    android:text="Bewegung Hinzufügen"
+                    android:onClick="@{view -> Navigation.findNavController(view).navigate(R.id.open_add_movment)}"/>
+
+                <Button
+                    android:id="@+id/btn_Export"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:onClick="@{() -> LabelPageViewModel.onExportClicked()}"
+                    android:text="Daten exportieren" />
+
+
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>

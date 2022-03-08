@@ -5,14 +5,11 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.meicke.threeSpaceSensorAndroidAPI.Exceptions.TssCommunicationException;
-import com.meicke.threeSpaceSensorAndroidAPI.Exceptions.TssConnectionException;
-
 import java.util.LinkedList;
 import java.util.List;
 
 import de.carloschmitt.morec.ApplicationController;
-import de.carloschmitt.morec.model.State;
+import de.carloschmitt.morec.repository.util.State;
 import de.carloschmitt.morec.model.setup.Sensor;
 
 public class Recorder {
@@ -75,7 +72,7 @@ public class Recorder {
                         @Override
                         public void run() {
                             int pos = ApplicationController.sensors.indexOf(sensor);
-                            ApplicationController.sensorItemAdapter.notifyItemChanged(pos);
+                            //ApplicationController.sensorItemAdapter.notifyItemChanged(pos);
                             Toast.makeText(ApplicationController.applicationContext,  sensor.getName() + " verbunden", Toast.LENGTH_SHORT).show();
                         }
                     }, 100);

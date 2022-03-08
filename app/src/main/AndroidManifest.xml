@@ -24,7 +24,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MoRec">
         <activity
-            android:name=".view.MainActivity"
+            android:windowSoftInputMode="adjustPan"
+            android:name=".view.activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

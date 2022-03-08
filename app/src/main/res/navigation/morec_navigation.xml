@@ -8,17 +8,17 @@
         android:id="@+id/setupPage"
         android:name="de.carloschmitt.morec.view.SetupPage"
         android:label="SetupPage"
-        tools:layout="@layout/fragment_page_setup">
+        tools:layout="@layout/page_setup">
         <action
             android:id="@+id/open_setupDialogue"
-            app:destination="@id/setupDialogue"
+            app:destination="@id/addSensorDialogue"
             app:popUpTo="@id/setupPage" />
     </fragment>
     <fragment
         android:id="@+id/recordingPage"
-        android:name="de.carloschmitt.morec.view.RecordPage"
+        android:name="de.carloschmitt.morec.view.LabelPage"
         android:label="recordPage"
-        tools:layout="@layout/fragment_page_record">
+        tools:layout="@layout/page_record">
         <action
             android:id="@+id/open_add_movment"
             app:destination="@id/addMovementDialogue"
@@ -32,18 +32,18 @@
         android:id="@+id/classifcationPage"
         android:name="de.carloschmitt.morec.view.ClassificationPage"
         android:label="classificationPage"
-        tools:layout="@layout/fragment_page_classification"/>
+        tools:layout="@layout/page_classification"/>
     <dialog
-        android:id="@+id/setupDialogue"
-        android:name="de.carloschmitt.morec.view.dialogues.SetupDialogue"
+        android:id="@+id/addSensorDialogue"
+        android:name="de.carloschmitt.morec.view.dialogues.SensorDialogue"
         android:label="SetupDialogue"
-        tools:layout="@layout/fragment_dialog_sensor"/>
+        tools:layout="@layout/dialog_sensor_details"/>
     <dialog
         android:id="@+id/addMovementDialogue"
-        android:name="de.carloschmitt.morec.view.dialogues.AddMovementDialog"
+        android:name="de.carloschmitt.morec.view.dialogues.AddLabelDialogue"
         android:label="addMovementDialogue"/>
     <dialog
         android:id="@+id/detaiedMovementDialogue"
-        android:name="de.carloschmitt.morec.view.dialogues.DetailedMovementDialogue"
+        android:name="de.carloschmitt.morec.view.dialogues.DetailedLabelDialogue"
         android:label="RecordingDialogue" />
 </navigation>

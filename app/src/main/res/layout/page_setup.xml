@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
+<layout xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+        <import type="de.carloschmitt.morec.R"/>
+        <import type="androidx.navigation.Navigation"/>
         <variable
             name="SetupPageViewModel"
             type="de.carloschmitt.morec.viewmodel.SetupPageViewModel" />
-        <variable
-            name="ConnectionStateViewModel"
-            type="de.carloschmitt.morec.viewmodel.ConnectionStateViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_sensors"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="10dp"
-        tools:layout_editor_absoluteY="10dp"
-        tools:listitem="@layout/fragment_item_sensor">
+            android:id="@+id/rv_sensors"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="120dp"
+            tools:layout_editor_absoluteX="10dp"
+            tools:layout_editor_absoluteY="10dp"
+            tools:listitem="@layout/item_sensor">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        </androidx.recyclerview.widget.RecyclerView>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -53,14 +53,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Sensor hinzufügen"
-                android:enabled="true"/>
+                android:enabled="@{SetupPageViewModel.addSensor_button_enabled}"
+                android:onClick="@{view -> Navigation.findNavController(view).navigate(R.id.open_setupDialogue)}"/>
 
             <Button
                 android:id="@+id/btn_connect_sensors"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{ConnectionStateViewModel.connect_button_text}"
-                android:enabled="@{ConnectionStateViewModel.connect_button_enabled}"/>
+                android:text="@{SetupPageViewModel.connect_button_text}"
+                android:enabled="@{SetupPageViewModel.connect_button_enabled}"
+                android:onClick="@{() -> SetupPageViewModel.onConnectClicked()}"/>
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

@@ -17,11 +17,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.carloschmitt.morec.model.State;
+import de.carloschmitt.morec.repository.util.State;
 import de.carloschmitt.morec.model.setup.Sensor;
 import de.carloschmitt.morec.model.recording.Movement;
-import de.carloschmitt.morec.adapters.MovementItemAdapter;
-import de.carloschmitt.morec.adapters.SensorItemAdapter;
 import de.carloschmitt.morec.model.recording.Recorder;
 import de.carloschmitt.morec.model.recording.Recording;
 
@@ -49,8 +47,8 @@ public class ApplicationController {
     public static Recorder recorder;
 
     //Wichtige Adapter:
-    public static MovementItemAdapter movementItemAdapter;
-    public static SensorItemAdapter sensorItemAdapter;
+    //public static LabelItemAdapter labelItemAdapter;
+    //public static SensorItemAdapter sensorItemAdapter;
 
     private ApplicationController(){
         movements = new ArrayList<>();
@@ -68,8 +66,8 @@ public class ApplicationController {
         movements.add(new Movement("Stehen",false));
         movements.add(new Movement("Stolpern",true));
 
-        movementItemAdapter = null;
-        sensorItemAdapter = null;
+        //labelItemAdapter = null;
+        //sensorItemAdapter = null;
         state = State.INACTIVE;
     }
 

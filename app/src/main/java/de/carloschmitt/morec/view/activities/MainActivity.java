@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.view;
+package de.carloschmitt.morec.view.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 import de.carloschmitt.morec.R;
 import de.carloschmitt.morec.databinding.ActivityMainBinding;
+import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.viewmodel.ConnectionStateViewModel;
 
 
@@ -21,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        //ApplicationController.getInstance();
+        MoRecRepository.getInstance().setContext(getApplicationContext());
 
         ConnectionStateViewModel viewModel = new ViewModelProvider(this).get(ConnectionStateViewModel.class);
         binding.setConnectionStateViewModel(viewModel);

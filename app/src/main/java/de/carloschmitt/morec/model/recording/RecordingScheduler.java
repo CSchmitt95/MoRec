@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import de.carloschmitt.morec.model.State;
+import de.carloschmitt.morec.repository.util.State;
 import de.carloschmitt.morec.ApplicationController;
 
 public class RecordingScheduler implements Runnable{
