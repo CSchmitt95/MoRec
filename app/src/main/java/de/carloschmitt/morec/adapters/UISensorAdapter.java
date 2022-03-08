@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import de.carloschmitt.morec.R;
 import de.carloschmitt.morec.databinding.ItemSensorBinding;
-import de.carloschmitt.morec.repository.model.UISensor;
+import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.view.activities.MainActivity;
 import de.carloschmitt.morec.viewmodel.SetupPageViewModel;
 
-public class UISensorAdapter extends ListAdapter<UISensor,RecyclerView.ViewHolder> {
+public class UISensorAdapter extends ListAdapter<Sensor,RecyclerView.ViewHolder> {
     private final String TAG = "UISensorAdapter";
     SetupPageViewModel setupPageViewModel;
 
@@ -25,16 +25,16 @@ public class UISensorAdapter extends ListAdapter<UISensor,RecyclerView.ViewHolde
         this.setupPageViewModel = setupPageViewModel;
     }
 
-    public static final DiffUtil.ItemCallback<UISensor> DIFF_CALLBACK =
-            new DiffUtil.ItemCallback<UISensor>() {
+    public static final DiffUtil.ItemCallback<Sensor> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<Sensor>() {
                 public String TAG = "DIFF_CALLBACK";
 
                 @Override
-                public boolean areItemsTheSame(@NonNull UISensor oldItem, @NonNull UISensor newItem) {
-                    return oldItem.getName().getValue().equals(newItem.getName().getValue());
+                public boolean areItemsTheSame(@NonNull Sensor oldItem, @NonNull Sensor newItem) {
+                    return oldItem.getLive_name().getValue().equals(newItem.getLive_name().getValue());
                 }
                 @Override
-                public boolean areContentsTheSame(@NonNull UISensor oldItem, @NonNull UISensor newIte) {
+                public boolean areContentsTheSame(@NonNull Sensor oldItem, @NonNull Sensor newIte) {
                     return true;
                 }
             };
@@ -51,10 +51,10 @@ public class UISensorAdapter extends ListAdapter<UISensor,RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((BindableViewholder) holder).itemSensorBinding.setUiSensor(getItem(position));
+        ((BindableViewholder) holder).itemSensorBinding.setSensor(getItem(position));
     }
 
-    public UISensor getUISensorAt(int pos){
+    public Sensor getUISensorAt(int pos){
         return getItem(pos);
     }
 
@@ -68,7 +68,7 @@ public class UISensorAdapter extends ListAdapter<UISensor,RecyclerView.ViewHolde
 
         @Override
         public void onClick(View v) {
-            UISensor clicked = itemSensorBinding.getUiSensor();
+            Sensor clicked = itemSensorBinding.getSensor();
             setupPageViewModel.setSelectedSensor(clicked);
             Navigation.findNavController(v).navigate(R.id.open_setupDialogue);
         }

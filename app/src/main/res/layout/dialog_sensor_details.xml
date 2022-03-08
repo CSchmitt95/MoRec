@@ -5,8 +5,8 @@
 
     <data>
         <variable
-            name="uiSensor"
-            type="de.carloschmitt.morec.repository.model.UISensor" />
+            name="sensor"
+            type="de.carloschmitt.morec.repository.model.Sensor" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Sensor Name"
-                android:text="@={uiSensor.name}"
+                android:text="@={sensor.Live_name}"
                 android:inputType="textPersonName" />
 
             <EditText
@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="MAC Adresse"
-                android:text="@={uiSensor.address}"
+                android:text="@={sensor.live_address}"
                 android:inputType="textPersonName" />
         </LinearLayout>
 

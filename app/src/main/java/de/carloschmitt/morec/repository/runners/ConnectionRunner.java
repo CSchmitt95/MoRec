@@ -8,11 +8,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.util.Constants;
 import de.carloschmitt.morec.repository.MoRecRepository;
-import de.carloschmitt.morec.repository.model.ActiveSensor;
 import de.carloschmitt.morec.repository.util.State;
-import de.carloschmitt.morec.repository.model.UISensor;
 
 public class ConnectionRunner implements Runnable{
     private static final String TAG = "SensorConnectionRunner";
@@ -23,14 +22,15 @@ public class ConnectionRunner implements Runnable{
         moRecRepository.resetStopSignal();
         CountDownLatch done = moRecRepository.getSignalStop();
         try {
-            for (UISensor sensor : moRecRepository.getUiSensors_ui().getValue()) {
+            for (Sensor sensor : moRecRepository.getUiSensors_ui().getValue()) {
                 //Sensor Pairen...
                 //TODO: Check for Bluetooth pairing.
                 sensor.setPaired();
 
                 //Sensor Verbinden...
-                ActiveSensor new_Sensor = new ActiveSensor(sensor.getName().getValue(), sensor.getAddress().getValue());
-                moRecRepository.getActiveSensors().add(new_Sensor);
+                //ActiveSensor new_Sensor = new ActiveSensor(sensor.getLive_name().getValue(), sensor.getLive_address().getValue());
+                //moRecRepository.getActiveSensors().add(new_Sensor);
+                sensor.createConnection();
                 sensor.setConnected();
             }
             moRecRepository.setState(State.CONNECTED);

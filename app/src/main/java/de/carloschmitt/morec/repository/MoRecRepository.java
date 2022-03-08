@@ -9,27 +9,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import de.carloschmitt.morec.repository.model.ActiveSensor;
 import de.carloschmitt.morec.repository.model.Label;
+import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.util.Constants;
 import de.carloschmitt.morec.repository.util.State;
-import de.carloschmitt.morec.repository.model.UISensor;
 import de.carloschmitt.morec.repository.runners.ConnectionRunner;
 
 public class MoRecRepository {
     Context context;
     private static final String TAG = "MoRecRepository";
-    private static MoRecRepository instance;
+    private static final MoRecRepository instance = new MoRecRepository();
 
     private MutableLiveData<List<Label>> uiLabels;
 
-    private List<UISensor> uiSensors;
-    private MutableLiveData<List<UISensor>> uiSensors_ui;
+    private List<Sensor> sensors;
+    private MutableLiveData<List<Sensor>> uiSensors_ui;
 
     private State state;
     private MutableLiveData<State> state_ui;
 
-    private List<ActiveSensor> activeSensors;
     private int currentRecordingLabel;
 
     private MutableLiveData<String> classificationResult;
@@ -38,23 +36,20 @@ public class MoRecRepository {
     private CountDownLatch signalStop;
 
     public MoRecRepository(){
-        activeSensors = new ArrayList<>();
         uiLabels = new MutableLiveData<>(new ArrayList<Label>());
-        uiSensors = new ArrayList<>();
-        uiSensors_ui = new MutableLiveData<>(uiSensors);
+        sensors = new ArrayList<>();
+        uiSensors_ui = new MutableLiveData<>(sensors);
         state = State.INACTIVE;
         state_ui = new MutableLiveData<>(state);
         currentRecordingLabel = -1;
         classificationResult = new MutableLiveData<>("Noch kein Ergebnis");
         last_classification = System.currentTimeMillis();
         signalStop = null;
+        instance.init();
+
     }
 
     public static MoRecRepository getInstance() {
-        if(instance == null) {
-            instance = new MoRecRepository();
-            instance.init();
-        }
         return instance;
     }
 
@@ -62,16 +57,12 @@ public class MoRecRepository {
         return uiLabels;
     }
 
-    public MutableLiveData<List<UISensor>> getUiSensors_ui() {
+    public MutableLiveData<List<Sensor>> getUiSensors_ui() {
         return uiSensors_ui;
     }
 
     public MutableLiveData<State> getState_ui() {
         return state_ui;
-    }
-
-    public List<ActiveSensor> getActiveSensors() {
-        return activeSensors;
     }
 
     public MutableLiveData<String> getClassificationResult() {
@@ -90,14 +81,15 @@ public class MoRecRepository {
     public void disconnectSensors(){
         if(state != State.CONNECTED && state != State.CONNECTING) return;
         setState(State.DISCONNECTING);
-        for(ActiveSensor activeSensor : activeSensors){
-            activeSensor.destroy();
-        }
-        for(UISensor sensor : uiSensors_ui.getValue()){
+
+        for(Sensor sensor : sensors){
+            try{
+                sensor.destroyConnection();
+            }catch (Exception e){
+                Log.e(TAG, e.getMessage());
+            }
             sensor.setDisconnected();
-            uiSensors_ui.postValue(uiSensors_ui.getValue());
         }
-        activeSensors.clear();
         setState(State.INACTIVE);
     }
 
@@ -127,19 +119,19 @@ public class MoRecRepository {
         old_Labels.remove(label);
         uiLabels.postValue(old_Labels);
     }
-    public void addUISensor(UISensor uiSensor){
-        uiSensors.add(uiSensor);
-        uiSensors_ui.postValue(uiSensors);
+    public void addUISensor(Sensor sensor){
+        sensors.add(sensor);
+        uiSensors_ui.postValue(sensors);
     }
 
-    public void removeUISensor(UISensor uiSensor){
-        uiSensors.remove(uiSensor);
-        uiSensors_ui.postValue(uiSensors);
+    public void removeUISensor(Sensor sensor){
+        sensors.remove(sensor);
+        uiSensors_ui.postValue(sensors);
     }
 
     public void init(){
-        uiSensors_ui.getValue().add(new UISensor("Guertel", "00:0E:0E:16:8F:F6"));
-        uiSensors_ui.getValue().add(new UISensor("Handgelenk", "00:0E:0E:1B:60:DE"));
+        uiSensors_ui.getValue().add(new Sensor("Guertel", "00:0E:0E:16:8F:F6"));
+        uiSensors_ui.getValue().add(new Sensor("Handgelenk", "00:0E:0E:1B:60:DE"));
 
         uiLabels.getValue().add(new Label("Gehen"));
         uiLabels.getValue().add(new Label("Stehen"));
@@ -209,5 +201,9 @@ public class MoRecRepository {
         if(state == State.CONNECTED){
             setState(State.EXPORTING);
         }
+    }
+
+    public List<Sensor> getUiSensors() {
+        return sensors;
     }
 }

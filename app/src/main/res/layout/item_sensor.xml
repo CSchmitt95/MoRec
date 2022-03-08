@@ -7,8 +7,8 @@
         <import type="de.carloschmitt.morec.R"/>
         <import type="androidx.navigation.Navigation"/>
         <variable
-            name="uiSensor"
-            type="de.carloschmitt.morec.repository.model.UISensor" />
+            name="sensor"
+            type="de.carloschmitt.morec.repository.model.Sensor" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:autoSizeMaxTextSize="21dp"
                     android:autoSizeTextType="uniform"
-                    android:text="@{uiSensor.name}"
+                    android:text="@{sensor.Live_name}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
                 <LinearLayout
@@ -61,9 +61,27 @@
                         android:id="@+id/sensor_address"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@{uiSensor.address}"
+                        android:text="@{sensor.live_address}"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-                </LinearLayout>
+                    </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sensor Health: "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+                    <TextView
+                        android:id="@+id/sensor_health"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{sensor.live_sensor_health}"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+            </LinearLayout>
 
             </LinearLayout>
 
@@ -79,7 +97,7 @@
                     android:id="@+id/chk_paired"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="@{uiSensor.paired}"
+                    android:checked="@{sensor.live_paired}"
                     android:enabled="false"
                     android:gravity="center|left"
                     android:text="Paired"
@@ -90,7 +108,7 @@
                     android:id="@+id/chk_active"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="@{uiSensor.connected}"
+                    android:checked="@{sensor.live_connected}"
                     android:enabled="false"
                     android:gravity="center|left"
                     android:text="Connected"

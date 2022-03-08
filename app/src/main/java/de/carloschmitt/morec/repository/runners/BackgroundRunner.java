@@ -1,32 +1,21 @@
 package de.carloschmitt.morec.repository.runners;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 
 import com.meicke.threeSpaceSensorAndroidAPI.Quaternion;
-
-import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import de.carloschmitt.morec.ApplicationController;
-import de.carloschmitt.morec.ml.GrtelHandgelenk;
-import de.carloschmitt.morec.model.recording.Movement;
-import de.carloschmitt.morec.model.recording.Recording;
 import de.carloschmitt.morec.repository.MoRecRepository;
-import de.carloschmitt.morec.repository.model.ActiveSensor;
 import de.carloschmitt.morec.repository.model.Label;
+import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.util.ClassificationUtil;
 import de.carloschmitt.morec.repository.util.Constants;
 import de.carloschmitt.morec.repository.util.ExportUtil;
@@ -73,9 +62,7 @@ public class BackgroundRunner implements Runnable{
     }
 
     private void recordQuaternion(){
-        List<ActiveSensor> activeSensorList = moRecRepository.getActiveSensors();
-
-        for(ActiveSensor sensor : activeSensorList){
+        for(Sensor sensor : moRecRepository.getUiSensors()){
             try{
                 sensor.recordQuaternion();
             }
@@ -87,7 +74,7 @@ public class BackgroundRunner implements Runnable{
 
     private void doClassification(){
         //Checken ob ein Buffer eventuell noch nicht bereit ist.
-        for(ActiveSensor s : moRecRepository.getActiveSensors()){
+        for(Sensor s : moRecRepository.getUiSensors()){
             if (!s.bufferIsSaturated()){
                 Log.d(TAG, "Buffer ist noch nicht bereit");
                 return;
@@ -101,7 +88,7 @@ public class BackgroundRunner implements Runnable{
         Log.d(TAG, "Sammle Sensordaten...");
         long beforeData = System.currentTimeMillis();
         List<Quaternion> input = new ArrayList<>();
-        for(ActiveSensor s : moRecRepository.getActiveSensors()){
+        for(Sensor s : moRecRepository.getUiSensors()){
             Log.d(TAG, s.getName());
             Log.d(TAG, "Get last n...");
             List<Quaternion> rawQuaternions = s.getLastNQuaternions(Constants.SAMPLES_PER_SECOND*Constants.WINDOW_SIZE_IN_S+1);
@@ -140,15 +127,15 @@ public class BackgroundRunner implements Runnable{
                 FileWriter writer = new FileWriter(gpxfile);
                 writer.append("MovementName,SensorName,Record_id,x0,y0 z0,w0... wn, xn, yn, zn\n");
                 int record_id = 0;
-                int index = ExportUtil.findNextStartOf(label, 0, moRecRepository.getActiveSensors().get(0).getRecordBuffer());
+                int index = ExportUtil.findNextStartOf(label, 0, moRecRepository.getUiSensors().get(0).getRecordBuffer());
                 while (index >= 0){
-                    int end = index + ExportUtil.getLengthOfCurrentLabel(index, moRecRepository.getActiveSensors().get(0).getRecordBuffer());
+                    int end = index + ExportUtil.getLengthOfCurrentLabel(index, moRecRepository.getUiSensors().get(0).getRecordBuffer());
 
-                    for(ActiveSensor sensor : moRecRepository.getActiveSensors()){
+                    for(Sensor sensor : moRecRepository.getUiSensors()){
                         writer.append(label.getLabel_text() + "," + sensor.getName() + ","+ record_id + ExportUtil.getQuaternionStringFromTo(index, end, sensor.getRecordBuffer()) +"\n" );
                     }
                     record_id++;
-                    index = ExportUtil.findNextStartOf(label, end + 1, moRecRepository.getActiveSensors().get(0).getRecordBuffer());
+                    index = ExportUtil.findNextStartOf(label, end + 1, moRecRepository.getUiSensors().get(0).getRecordBuffer());
                 }
                 writer.flush();
                 writer.close();

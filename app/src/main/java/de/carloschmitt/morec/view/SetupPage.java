@@ -1,31 +1,21 @@
 package de.carloschmitt.morec.view;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import de.carloschmitt.morec.R;
 import de.carloschmitt.morec.adapters.UISensorAdapter;
 import de.carloschmitt.morec.databinding.PageSetupBinding;
-import de.carloschmitt.morec.repository.MoRecRepository;
-import de.carloschmitt.morec.repository.model.UISensor;
-import de.carloschmitt.morec.viewmodel.ConnectionStateViewModel;
 import de.carloschmitt.morec.viewmodel.SetupPageViewModel;
 
 public class SetupPage extends Fragment {

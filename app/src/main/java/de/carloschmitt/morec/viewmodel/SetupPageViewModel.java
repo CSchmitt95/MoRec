@@ -12,8 +12,8 @@ import androidx.lifecycle.Observer;
 
 import java.util.List;
 
+import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.util.State;
-import de.carloschmitt.morec.repository.model.UISensor;
 import de.carloschmitt.morec.repository.MoRecRepository;
 
 public class SetupPageViewModel extends AndroidViewModel {
@@ -21,10 +21,10 @@ public class SetupPageViewModel extends AndroidViewModel {
     private MoRecRepository moRecRepository;
 
     private MediatorLiveData<String> connect_button_text;
-    private MutableLiveData<List<UISensor>> uiSensors;
+    private MutableLiveData<List<Sensor>> uiSensors;
     private MutableLiveData<Boolean> connect_button_enabled;
     private MutableLiveData<Boolean> addSensor_button_enabled;
-    private MutableLiveData<UISensor> selectedSensor;
+    private MutableLiveData<Sensor> selectedSensor;
 
 
     public SetupPageViewModel(@NonNull Application application) {
@@ -90,13 +90,13 @@ public class SetupPageViewModel extends AndroidViewModel {
         return addSensor_button_enabled;
     }
 
-    public MutableLiveData<List<UISensor>> getUiSensors() {
+    public MutableLiveData<List<Sensor>> getUiSensors() {
         return uiSensors;
     }
 
-    public void addUISensor(UISensor uiSensor) { moRecRepository.addUISensor(uiSensor); }
+    public void addUISensor(Sensor sensor) { moRecRepository.addUISensor(sensor); }
 
-    public void deleteUISensor(UISensor uiSensor) { moRecRepository.removeUISensor(uiSensor); }
+    public void deleteUISensor(Sensor sensor) { moRecRepository.removeUISensor(sensor); }
 
     public void onConnectClicked(){
         switch (moRecRepository.getState_ui().getValue()){
@@ -109,19 +109,19 @@ public class SetupPageViewModel extends AndroidViewModel {
         }
     }
 
-    public LiveData<UISensor> getSelectedSensor() {
+    public LiveData<Sensor> getSelectedSensor() {
         Log.d(TAG,"get Selected Sensor: " + selectedSensor.toString());
         return selectedSensor;
     }
 
-    public void setSelectedSensor(UISensor newly_selected_sensor) {
+    public void setSelectedSensor(Sensor newly_selected_sensor) {
         selectedSensor = new MutableLiveData<>(newly_selected_sensor);
         //if(uiSensors.getValue().contains(selectedSensor.getValue())) moRecRepository.removeUISensor(selectedSensor.getValue());
     }
 
     public void resetSelectedSensor(){
-        String name = selectedSensor.getValue().getName().getValue();
-        String address = selectedSensor.getValue().getAddress().getValue();
+        String name = selectedSensor.getValue().getLive_name().getValue();
+        String address = selectedSensor.getValue().getLive_address().getValue();
 
         Log.d(TAG, name + address);
         if(!name.trim().isEmpty() && !address.trim().isEmpty()){

@@ -11,10 +11,10 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.util.Constants;
 import de.carloschmitt.morec.repository.util.State;
 import de.carloschmitt.morec.repository.MoRecRepository;
-import de.carloschmitt.morec.repository.model.ActiveSensor;
 import de.carloschmitt.morec.repository.model.Label;
 
 public class DetailedLabelDialogViewModel extends AndroidViewModel {
@@ -81,10 +81,10 @@ public class DetailedLabelDialogViewModel extends AndroidViewModel {
 
     public void setUiLabel(Label label) {
         this.uiLabel = new MutableLiveData<>(label);
-        if(moRecRepository.getActiveSensors().size() != 0) {
-            ActiveSensor activeSensor = moRecRepository.getActiveSensors().get(0);
+        if(moRecRepository.getUiSensors().size() != 0) {
+            Sensor sensor = moRecRepository.getUiSensors().get(0);
             int label_id = uiLabel.getValue().getLabel_id().getValue();
-            MutableLiveData<Integer> number_of_samples = activeSensor.getNumberOfSamplesForUI(label_id);
+            MutableLiveData<Integer> number_of_samples = sensor.getNumberOfSamplesForUI(label_id);
             record_stats.addSource(number_of_samples, new Observer<Integer>() {
                 @Override
                 public void onChanged(Integer integer) {
