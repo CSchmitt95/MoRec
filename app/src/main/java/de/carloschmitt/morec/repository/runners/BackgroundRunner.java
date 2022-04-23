@@ -62,14 +62,17 @@ public class BackgroundRunner implements Runnable{
     }
 
     private void recordQuaternion(){
+        boolean a_sensor_died = false;
         for(Sensor sensor : moRecRepository.getUiSensors()){
             try{
                 sensor.recordQuaternion();
+                if(sensor.died()) a_sensor_died = true;
             }
             catch (Exception e){
                 e.printStackTrace();
             }
         }
+        if(a_sensor_died) done.countDown();
     }
 
     private void doClassification(){
@@ -90,21 +93,16 @@ public class BackgroundRunner implements Runnable{
         List<Quaternion> input = new ArrayList<>();
         for(Sensor s : moRecRepository.getUiSensors()){
             Log.d(TAG, s.getName());
-            Log.d(TAG, "Get last n...");
-            List<Quaternion> rawQuaternions = s.getLastNQuaternions(Constants.SAMPLES_PER_SECOND*Constants.WINDOW_SIZE_IN_S+1);
-            Log.d(TAG, "Get diff... (" + rawQuaternions.size() +" )");
+            List<Quaternion> rawQuaternions = s.getLastNQuaternions(Constants.SAMPLES_PER_SECOND*Constants.WINDOW_SIZE_IN_S +1);
             List<Quaternion> diffQuaternions = ClassificationUtil.rawQuaternionsToDiffQuaternions(rawQuaternions);
-            Log.d(TAG, "Get null...(" + diffQuaternions.size() +  ")");
-            Log.d(TAG, "Nullification first Quaternion: " + diffQuaternions.get(0).toString());
             List<Quaternion> nullQuaternions = ClassificationUtil.nullifyQuaternions(diffQuaternions);
-            Log.d(TAG, "Genullte ...(" + nullQuaternions.size() +  ")");
 
             input.addAll(nullQuaternions);
         }
         long afterData = System.currentTimeMillis();
         Log.d(TAG, "Daten gesammelt. ( " + (afterData - beforeData) + "ms )");
 
-        Log.d(TAG, "Starte Classification Thread");
+        Log.d(TAG, "Starte Classification Thread (input size: " + input.size() + ")");
         ClassificationRunner classificationRunner = new ClassificationRunner(input);
         Thread classificationThread = new Thread(classificationRunner);
         classificationThread.start();

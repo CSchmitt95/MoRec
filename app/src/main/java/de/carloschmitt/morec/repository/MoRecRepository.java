@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import de.carloschmitt.morec.repository.model.Label;
+import de.carloschmitt.morec.repository.model.ConfusionMatrix;
 import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.util.Constants;
 import de.carloschmitt.morec.repository.util.State;
@@ -18,7 +19,7 @@ import de.carloschmitt.morec.repository.runners.ConnectionRunner;
 public class MoRecRepository {
     Context context;
     private static final String TAG = "MoRecRepository";
-    private static final MoRecRepository instance = new MoRecRepository();
+    private static MoRecRepository instance;
 
     private MutableLiveData<List<Label>> uiLabels;
 
@@ -34,6 +35,14 @@ public class MoRecRepository {
 
     private long last_classification;
     private CountDownLatch signalStop;
+    private float[] current_actual;
+
+    ConfusionMatrix cm_Grtl;
+    ConfusionMatrix cm_Handgelenk;
+    ConfusionMatrix cm_GrtlHandgelenk;
+
+    int[] evaluation_label_counter;
+
 
     public MoRecRepository(){
         uiLabels = new MutableLiveData<>(new ArrayList<Label>());
@@ -45,11 +54,19 @@ public class MoRecRepository {
         classificationResult = new MutableLiveData<>("Noch kein Ergebnis");
         last_classification = System.currentTimeMillis();
         signalStop = null;
-        instance.init();
+        current_actual = new float[] {0,0,0};
+        evaluation_label_counter = new int[3];
 
+        cm_Grtl = new ConfusionMatrix(3);
+        cm_Handgelenk = new ConfusionMatrix(3);
+        cm_GrtlHandgelenk = new ConfusionMatrix(3);
     }
 
     public static MoRecRepository getInstance() {
+        if(instance == null){
+            instance = new MoRecRepository();
+            instance.init();
+        }
         return instance;
     }
 
@@ -80,17 +97,7 @@ public class MoRecRepository {
 
     public void disconnectSensors(){
         if(state != State.CONNECTED && state != State.CONNECTING) return;
-        setState(State.DISCONNECTING);
-
-        for(Sensor sensor : sensors){
-            try{
-                sensor.destroyConnection();
-            }catch (Exception e){
-                Log.e(TAG, e.getMessage());
-            }
-            sensor.setDisconnected();
-        }
-        setState(State.INACTIVE);
+        signalStop.countDown();
     }
 
     public void startRecording(int label_id){
@@ -136,6 +143,11 @@ public class MoRecRepository {
         uiLabels.getValue().add(new Label("Gehen"));
         uiLabels.getValue().add(new Label("Stehen"));
         uiLabels.getValue().add(new Label("Stolpern"));
+
+        ConfusionMatrix pm = new ConfusionMatrix(3);
+        float predicted[] = {0f,0.1f,0.9f};
+        float actual[] = {0f,0f,1f};
+        pm.addValue(predicted, actual);
     }
 
     public int getCurrentRecordingLabel() {
@@ -205,5 +217,25 @@ public class MoRecRepository {
 
     public List<Sensor> getUiSensors() {
         return sensors;
+    }
+
+    public float[] getCurrent_actual() {
+        return current_actual;
+    }
+
+    public void setCurrent_actual(float[] current_actual) {
+        this.current_actual = current_actual;
+    }
+
+    public ConfusionMatrix getCm_Grtl() {
+        return cm_Grtl;
+    }
+
+    public ConfusionMatrix getCm_Handgelenk() {
+        return cm_Handgelenk;
+    }
+
+    public ConfusionMatrix getCm_GrtlHandgelenk() {
+        return cm_GrtlHandgelenk;
     }
 }

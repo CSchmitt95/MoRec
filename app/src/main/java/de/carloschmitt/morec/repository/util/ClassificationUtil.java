@@ -7,6 +7,8 @@ import com.meicke.threeSpaceSensorAndroidAPI.Quaternion;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.carloschmitt.morec.repository.MoRecRepository;
+
 public class ClassificationUtil {
 
     /**
@@ -14,7 +16,7 @@ public class ClassificationUtil {
      * @param quaternionList Eingangsliste
      * @return floatarray mit den werten aus der Eingangsliste.
      */
-    public static float[] quaternionsToFloat(List<Quaternion> quaternionList){
+    public static float[] allQuaternionsToFloat(List<Quaternion> quaternionList){
         float[] ret = new float[quaternionList.size() * 4];
 
         for(int i = 0; i < quaternionList.size(); i++){
@@ -26,6 +28,20 @@ public class ClassificationUtil {
 
         return ret;
     }
+
+    public static float[] sensorQuaternionsToFloat(int sensor, List<Quaternion> quaternionList){
+        float[] ret = new float[Constants.QUATERNIONS_PER_WINDOW * 4];
+
+        for(int i = 0; i < Constants.QUATERNIONS_PER_WINDOW; i++){
+            ret[i*4 + 0] = quaternionList.get(i+Constants.QUATERNIONS_PER_WINDOW*sensor).getW();
+            ret[i*4 + 1] = quaternionList.get(i+Constants.QUATERNIONS_PER_WINDOW*sensor).getX();
+            ret[i*4 + 2] = quaternionList.get(i+Constants.QUATERNIONS_PER_WINDOW*sensor).getY();
+            ret[i*4 + 3] = quaternionList.get(i+Constants.QUATERNIONS_PER_WINDOW*sensor).getZ();
+        }
+
+        return ret;
+    }
+
 
     /**
      * Gibt für eine Datenreihe an Quaternionen die entsprechenden Differenzquaternionen für jeden Schritt zurück.
@@ -62,21 +78,39 @@ public class ClassificationUtil {
         return ret;
     }
 
+    public static String getConflictString(String[] results){
+        String ret = "";
+        String[] sensor_names = new String[MoRecRepository.getInstance().getUiSensors().size() + 1];
+        sensor_names[0] = "Kombo";
+        for(int i = 1; i < sensor_names.length; i++) {
+            sensor_names[i] = MoRecRepository.getInstance().getUiSensors().get(i-1).getName();
+        }
+        for(int i = 1; i < results.length; i++){
+            for(int j = i; j < results.length; j++){
+                if(!results[i].equals(results[j])) ret += sensor_names[i] +" sagt " + results[i] + ", aber "+ sensor_names[j] +" sagt " + results[j] + "\n"+
+                        "Kombo übernimmt: " + (results[0].equals(results[i]) ? sensor_names[i] : sensor_names[j] + "\n");
+            }
+        }
+        return ret;
+    }
+
+    public static String getMostProbableLabel(String[] labels, float[] result){
+        int label_index = indexOfMax(result);
+        return labels[label_index];
+    }
 
     public static String getResultString(String[] labels, float[] result){
         int label_index = indexOfMax(result);
         float prob = result[label_index];
-        String label = labels[label_index];
-        String format_prob = String.format("%.02f", prob);
 
-        String ret = "Ergebnis:\n";// label + "(" + format_prob + ")";
+        String ret = "";// label + "(" + format_prob + ")";
         for(int i = 0; i < labels.length; i++){
             ret += labels[i] + " (" + String.format("%.02f", result[i]) + ") \n";
         }
         return ret;
     }
 
-    private static int indexOfMax(float[] array){
+    public static int indexOfMax(float[] array){
         int max = 0;
         int index = 0;
         while (index < array.length){
@@ -84,5 +118,26 @@ public class ClassificationUtil {
             index++;
         }
         return max;
+    }
+
+    public static String matrixToString(int[][] matrix) {
+        String ret = "";
+        for(int i = 0; i < matrix.length; i ++){
+            for(int j = 0 ; j < matrix[i].length; j++){
+                ret += " [" + matrix[i][j] + "] ";
+            }
+            ret+= "\n";
+        }
+        return ret;
+    }
+
+    public static String getValuesWithLabels(int[] values, String[] labels){
+        String ret = "";
+        if(values.length == labels.length){
+            for(int i = 0; i < values.length; i++){
+                ret += labels[i] + ": " + values[i] + " ";
+            }
+        }
+        return ret;
     }
 }

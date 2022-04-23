@@ -39,14 +39,23 @@ public class ConnectionRunner implements Runnable{
             ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(new BackgroundRunner(done),0,1000/ Constants.SAMPLES_PER_SECOND, TimeUnit.MILLISECONDS);
             Log.d(TAG,"Warte auf Beendigung...");
             done.await();
-            moRecRepository.setState(State.CONNECTING);
+            moRecRepository.setState(State.DISCONNECTING);
             Log.d(TAG,"Trennungssignal erhalten...");
             future.cancel(false);
         } catch (Exception e) {
             Log.e(TAG, "Fehler beim Verbindungsaufbau.");
             Log.e(TAG, e.getMessage());
         }
-        moRecRepository.disconnectSensors();
+        for(Sensor sensor : moRecRepository.getUiSensors()){
+            try{
+                sensor.destroyConnection();
+            }catch (Exception e){
+                Log.e(TAG, e.getMessage());
+            }
+            sensor.setDisconnected();
+        }
+        moRecRepository.setState(State.INACTIVE);
+        //moRecRepository.disconnectSensors();
         Log.d(TAG,"Beendet");
     }
 }

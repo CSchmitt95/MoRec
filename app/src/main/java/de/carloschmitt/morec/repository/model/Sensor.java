@@ -118,7 +118,6 @@ public class Sensor {
     }
 
     private void increaseDuplicateQuaternions(){
-        Log.d(TAG, "doppelte Quaternion");
         num_of_duplicates++;
         if(num_of_duplicates > max_num_of_duplicates) max_num_of_duplicates = num_of_duplicates;
         live_sensor_health.postValue(Integer.toString(max_num_of_duplicates));
@@ -170,5 +169,9 @@ public class Sensor {
 
     public String getName() {
         return name;
+    }
+
+    public boolean died(){
+        return num_of_duplicates > Constants.SENSOR_HEALTH_THRESHHOLD;
     }
 }
