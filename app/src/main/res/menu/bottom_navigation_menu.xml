@@ -3,15 +3,15 @@
         android:id="@+id/recordingPage"
         android:enabled="true"
         android:icon="@android:drawable/stat_notify_sdcard"
-        android:title="Bewegungen" />
+        android:title="Aufnahme" />
     <item
         android:id="@+id/setupPage"
         android:enabled="true"
         android:icon="@android:drawable/ic_lock_idle_charging"
-        android:title="Sensoren" />
+        android:title="Einstellungen" />
     <item
         android:id="@+id/classifcationPage"
         android:enabled="true"
         android:icon="@android:drawable/ic_media_play"
-        android:title="Erkennung" />
+        android:title="Klassifizierung" />
 </menu>
