@@ -69,6 +69,7 @@ public class SetupPageViewModel extends AndroidViewModel {
                         connect_button_enabled.postValue(false);
                         connect_button_text.postValue("Export läuft noch...");
                         addSensor_button_enabled.postValue(false);
+                        break;
                     case DISCONNECTING:
                         connect_button_enabled.postValue(false);
                         connect_button_text.postValue("Verbindung wird getrennt");

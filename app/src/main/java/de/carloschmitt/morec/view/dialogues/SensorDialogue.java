@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import de.carloschmitt.morec.R;
 import de.carloschmitt.morec.databinding.DialogSensorDetailsBinding;
+import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.viewmodel.SetupPageViewModel;
 
@@ -34,8 +35,9 @@ public class SensorDialogue extends DialogFragment {
         Sensor sensor = setupPageViewModel.getSelectedSensor().getValue();
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         if (sensor == null) {
+            int sensornumber = MoRecRepository.getInstance().getUiSensors().size() + 1;
             alertDialogBuilder.setTitle("Sensor hinzufügen");
-            sensor = new Sensor("Neuer Sensor", "00:00:00:00:00:00");
+            sensor = new Sensor("Sensor " + sensornumber, "00:00:00:00:00:00");
             setupPageViewModel.setSelectedSensor(sensor);
         }
         else {

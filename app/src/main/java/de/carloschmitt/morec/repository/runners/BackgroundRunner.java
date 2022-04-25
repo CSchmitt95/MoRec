@@ -37,9 +37,6 @@ public class BackgroundRunner implements Runnable{
         moRecRepository = MoRecRepository.getInstance();
 
         switch (moRecRepository.getState()){
-            case EXPORTING:
-                exportData();
-                break;
             case CLASSIFYING:
                 recordQuaternion();
                 doClassification();
@@ -55,6 +52,9 @@ public class BackgroundRunner implements Runnable{
                 break;
             case CONNECTING:
                 Log.d(TAG, "Something went terribly wrong: Background runner scheduled when CONNECTING");
+                break;
+            case EXPORTING:
+                Log.d(TAG, "Something went terribly wrong: Background runner scheduled when EXPORTING");
                 break;
         }
         long end = System.currentTimeMillis();
@@ -76,7 +76,7 @@ public class BackgroundRunner implements Runnable{
     }
 
     private void doClassification(){
-        //Checken ob ein Buffer eventuell noch nicht bereit ist.
+        //Checken ob ein Buffer bereit ist.
         for(Sensor s : moRecRepository.getUiSensors()){
             if (!s.bufferIsSaturated()){
                 Log.d(TAG, "Buffer ist noch nicht bereit");
@@ -109,40 +109,5 @@ public class BackgroundRunner implements Runnable{
         Log.d(TAG, "Classification Thread gestartet");
     }
 
-    public void exportData(){
-        try
-        {
-            String foldername = new SimpleDateFormat("yyyyMMdd_HH:mm").format(new Date());
-            File root = new File(moRecRepository.getContext().getExternalFilesDir(null).toString(), foldername);
-            if (!root.exists()) {
-                root.mkdirs();
-            }
-            //bar.setMax(movements.size()*100);
-            //bar.setIndeterminate(false);
-            for(Label label : moRecRepository.getUiLabels().getValue()){
-                //bar.setProgress(movements.indexOf(movement)*100);
-                File gpxfile = new File(root, label.getLabel_text() + ".csv");
-                FileWriter writer = new FileWriter(gpxfile);
-                writer.append("MovementName,SensorName,Record_id,x0,y0 z0,w0... wn, xn, yn, zn\n");
-                int record_id = 0;
-                int index = ExportUtil.findNextStartOf(label, 0, moRecRepository.getUiSensors().get(0).getRecordBuffer());
-                while (index >= 0){
-                    int end = index + ExportUtil.getLengthOfCurrentLabel(index, moRecRepository.getUiSensors().get(0).getRecordBuffer());
 
-                    for(Sensor sensor : moRecRepository.getUiSensors()){
-                        writer.append(label.getLabel_text() + "," + sensor.getName() + ","+ record_id + ExportUtil.getQuaternionStringFromTo(index, end, sensor.getRecordBuffer()) +"\n" );
-                    }
-                    record_id++;
-                    index = ExportUtil.findNextStartOf(label, end + 1, moRecRepository.getUiSensors().get(0).getRecordBuffer());
-                }
-                writer.flush();
-                writer.close();
-            }
-        }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-        }
-        moRecRepository.setState(State.CONNECTED);
-    }
 }

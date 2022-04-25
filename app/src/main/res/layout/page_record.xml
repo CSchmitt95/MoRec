@@ -72,7 +72,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
                     android:onClick="@{() -> LabelPageViewModel.onExportClicked()}"
-                    android:text="Daten exportieren" />
+                    android:text="@{LabelPageViewModel.exportButtonText}"
+                    android:enabled="@{LabelPageViewModel.exportButtonEnabled}"/>
 
 
             </LinearLayout>

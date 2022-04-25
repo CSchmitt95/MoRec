@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import de.carloschmitt.morec.repository.model.Label;
 import de.carloschmitt.morec.repository.model.ConfusionMatrix;
 import de.carloschmitt.morec.repository.model.Sensor;
+import de.carloschmitt.morec.repository.runners.ExportRunner;
 import de.carloschmitt.morec.repository.util.Constants;
 import de.carloschmitt.morec.repository.util.State;
 import de.carloschmitt.morec.repository.runners.ConnectionRunner;
@@ -210,8 +211,10 @@ public class MoRecRepository {
     }
 
     public void exportData(){
-        if(state == State.CONNECTED){
-            setState(State.EXPORTING);
+        if(state == State.INACTIVE){
+            ExportRunner exportRunner = new ExportRunner();
+            Thread exportThread = new Thread(exportRunner);
+            exportThread.start();
         }
     }
 

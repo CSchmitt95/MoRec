@@ -31,7 +31,6 @@
                 android:layout_height="wrap_content"
                 android:autoSizeMaxTextSize="21dp"
                 android:autoSizeTextType="uniform"
-                android:autoText="true"
                 android:text="@{label.label_text_ui}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
@@ -49,7 +48,7 @@
                     android:id="@+id/movement_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{label.label_id.toString()}"
+                    android:text="@{label.recording_stats}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small" />
             </LinearLayout>
 
