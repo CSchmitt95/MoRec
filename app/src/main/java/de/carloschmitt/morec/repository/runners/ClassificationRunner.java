@@ -15,14 +15,15 @@ import de.carloschmitt.morec.ml.Grtel;
 import de.carloschmitt.morec.ml.GrtelHandgelenk;
 import de.carloschmitt.morec.ml.Handgelenk;
 import de.carloschmitt.morec.repository.MoRecRepository;
+import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.util.ClassificationUtil;
 
 public class ClassificationRunner implements Runnable{
     private final String TAG = "ClassificationRunner";
-    private List<Quaternion> input;
+    private List<List<Quaternion>> input;
     private MoRecRepository moRecRepository;
 
-    public ClassificationRunner(List<Quaternion> input){
+    public ClassificationRunner(List<List<Quaternion>> input){
         this.moRecRepository = MoRecRepository.getInstance();
         this.input = input;
     }
@@ -31,12 +32,19 @@ public class ClassificationRunner implements Runnable{
     public void run() {
         long beforeClassification = System.currentTimeMillis();
         try {
+            List<Quaternion> processed_input = new ArrayList<>();
+            for(List<Quaternion> raw_quaternions : input){
+                List<Quaternion> diffQuaternions = ClassificationUtil.rawQuaternionsToDiffQuaternions(raw_quaternions);
+                List<Quaternion> nullQuaternions = ClassificationUtil.nullifyQuaternions(diffQuaternions);
+                processed_input.addAll(nullQuaternions);
+            }
+
             Log.d(TAG, "Klassifiziere...");
             String[] labels = {"Stolpern", "Gehen", "Stehen"};
 
-            float[] grtlHandgelenk_input = ClassificationUtil.allQuaternionsToFloat(input);
-            float[] grtl_input = ClassificationUtil.sensorQuaternionsToFloat(0,input);
-            float[] handgelenk_input = ClassificationUtil.sensorQuaternionsToFloat(1, input);
+            float[] grtlHandgelenk_input = ClassificationUtil.allQuaternionsToFloat(processed_input);
+            float[] grtl_input = ClassificationUtil.sensorQuaternionsToFloat(0,processed_input);
+            float[] handgelenk_input = ClassificationUtil.sensorQuaternionsToFloat(1, processed_input);
 
             Log.d(TAG, "float input size : " + grtlHandgelenk_input.length);
             TensorBuffer inputFeatureGrtlHandgelenk = TensorBuffer.createFixedSize(new int[]{1, 3000 }, DataType.FLOAT32);

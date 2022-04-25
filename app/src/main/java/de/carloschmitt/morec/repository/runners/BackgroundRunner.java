@@ -90,14 +90,10 @@ public class BackgroundRunner implements Runnable{
         // Sensordaten müssen in diesem Thread abgegriffen werden um Safe zu bleiben...
         Log.d(TAG, "Sammle Sensordaten...");
         long beforeData = System.currentTimeMillis();
-        List<Quaternion> input = new ArrayList<>();
+        List<List<Quaternion>> input = new ArrayList<>();
         for(Sensor s : moRecRepository.getUiSensors()){
-            Log.d(TAG, s.getName());
             List<Quaternion> rawQuaternions = s.getLastNQuaternions(Constants.SAMPLES_PER_SECOND*Constants.WINDOW_SIZE_IN_S +1);
-            List<Quaternion> diffQuaternions = ClassificationUtil.rawQuaternionsToDiffQuaternions(rawQuaternions);
-            List<Quaternion> nullQuaternions = ClassificationUtil.nullifyQuaternions(diffQuaternions);
-
-            input.addAll(nullQuaternions);
+            input.add(rawQuaternions);
         }
         long afterData = System.currentTimeMillis();
         Log.d(TAG, "Daten gesammelt. ( " + (afterData - beforeData) + "ms )");
