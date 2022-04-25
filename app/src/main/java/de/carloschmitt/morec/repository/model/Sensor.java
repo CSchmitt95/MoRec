@@ -18,25 +18,26 @@ import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.util.Constants;
 
 public class Sensor {
-    private static final String TAG = "UISensor";
+    private static final String TAG = "Sensor";
 
     //UI STUFF
-    private String name;
     private MutableLiveData<String> live_name;
-    private String address;
     private MutableLiveData<String> live_address;
     private MutableLiveData<Boolean> live_paired;
     private MutableLiveData<Boolean> live_connected;
+    private HashMap<Integer, MutableLiveData<Integer>> ui_SampleCounters;
+    private MutableLiveData<String> live_sensor_health;
 
-    //FUNCTIONAL STUFF... but kinda UI...
+
+    //FUNCTIONAL STUFF
+    private String name;
+    private String address;
     private MoRecRepository moRecRepository;
     private TssMiniBluetooth tssMiniBluetooth;
     private ArrayList<Sample> recordBuffer;
     private int num_of_duplicates;
     private int max_num_of_duplicates;
-    private MutableLiveData<String> live_sensor_health;
-    private HashMap<Integer, Integer> label_counters;
-    private HashMap<Integer, MutableLiveData<Integer>> label_counters_ui;
+    private HashMap<Integer, Integer> sampleCounters;
 
     public Sensor(String new_name, String new_address){
         moRecRepository = MoRecRepository.getInstance();
@@ -52,8 +53,8 @@ public class Sensor {
         num_of_duplicates = 0;
         max_num_of_duplicates = num_of_duplicates;
         live_sensor_health = new MutableLiveData<>("---");
-        label_counters = new HashMap<>();
-        label_counters_ui = new HashMap<>();
+        sampleCounters = new HashMap<>();
+        ui_SampleCounters = new HashMap<>();
     }
 
     public void createConnection() throws TssConnectionException, TssCommunicationException {
@@ -77,12 +78,12 @@ public class Sensor {
             increaseDuplicateQuaternions();
         else resetDuplicateQuaternions();
 
-        if (label_counters.get(label_id) == null) {
-            label_counters.put(label_id, 1);
-            label_counters_ui.put(label_id, new MutableLiveData<>(1));
+        if (sampleCounters.get(label_id) == null) {
+            sampleCounters.put(label_id, 1);
+            ui_SampleCounters.put(label_id, new MutableLiveData<>(1));
         }
-        label_counters.put(label_id, label_counters.get(label_id) + 1);
-        label_counters_ui.get(label_id).postValue(label_counters.get(label_id));
+        sampleCounters.put(label_id, sampleCounters.get(label_id) + 1);
+        ui_SampleCounters.get(label_id).postValue(sampleCounters.get(label_id));
     }
 
     private boolean checkForNewDuplicate(){
@@ -91,12 +92,12 @@ public class Sensor {
     }
 
     public MutableLiveData<Integer> getNumberOfSamplesForUI(int label_id){
-        if (label_counters_ui.get(label_id) == null) {
-            label_counters.put(label_id, 0);
-            label_counters_ui.put(label_id, new MutableLiveData<>(label_counters.get(label_id)));
+        if (ui_SampleCounters.get(label_id) == null) {
+            sampleCounters.put(label_id, 0);
+            ui_SampleCounters.put(label_id, new MutableLiveData<>(sampleCounters.get(label_id)));
 
         }
-        return label_counters_ui.get(label_id);
+        return ui_SampleCounters.get(label_id);
     }
 
     public boolean bufferIsSaturated(){
