@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -17,7 +18,7 @@ import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.model.Label;
 import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.util.ClassificationUtil;
-import de.carloschmitt.morec.repository.util.Constants;
+import de.carloschmitt.morec.repository.Constants;
 import de.carloschmitt.morec.repository.util.ExportUtil;
 import de.carloschmitt.morec.repository.util.State;
 
@@ -59,6 +60,10 @@ public class BackgroundRunner implements Runnable{
         }
         long end = System.currentTimeMillis();
         if(end - start > 1000/Constants.SAMPLES_PER_SECOND) Log.e(TAG,"Background Runner läuft zu langsam (" + (end-start) + "/" + 1000/Constants.SAMPLES_PER_SECOND + "ms )");
+        List<Long> log = moRecRepository.getRuntime_log().get("BackgroundRunner");
+        if(log == null) log = new ArrayList<>();
+        log.add(end-start);
+        moRecRepository.getRuntime_log().put("BackgroundRunner",log);
     }
 
     private void recordQuaternion(){

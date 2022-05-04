@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.repository.util;
+package de.carloschmitt.morec.repository;
 
 public class Constants {
     public static final String TAG = "Data";

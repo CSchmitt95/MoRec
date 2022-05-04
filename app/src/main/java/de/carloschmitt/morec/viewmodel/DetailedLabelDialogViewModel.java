@@ -12,7 +12,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import de.carloschmitt.morec.repository.model.Sensor;
-import de.carloschmitt.morec.repository.util.Constants;
+import de.carloschmitt.morec.repository.Constants;
 import de.carloschmitt.morec.repository.util.State;
 import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.model.Label;

@@ -2,6 +2,8 @@ package de.carloschmitt.morec.repository.runners;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -9,7 +11,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import de.carloschmitt.morec.repository.model.Sensor;
-import de.carloschmitt.morec.repository.util.Constants;
+import de.carloschmitt.morec.repository.Constants;
 import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.util.State;
 
@@ -18,6 +20,7 @@ public class ConnectionRunner implements Runnable{
 
     @Override
     public void run() {
+        long start = System.currentTimeMillis();
         MoRecRepository moRecRepository = MoRecRepository.getInstance();
         moRecRepository.resetStopSignal();
         CountDownLatch done = moRecRepository.getSignalStop();
@@ -56,6 +59,11 @@ public class ConnectionRunner implements Runnable{
         }
         moRecRepository.setState(State.INACTIVE);
         //moRecRepository.disconnectSensors();
+        long end = System.currentTimeMillis();
+        List<Long> log = moRecRepository.getRuntime_log().get("ConnectionRunner");
+        if(log == null) log = new ArrayList<>();
+        log.add(end-start);
+        moRecRepository.getRuntime_log().put("ConnectionRunner",log);
         Log.d(TAG,"Beendet");
     }
 }

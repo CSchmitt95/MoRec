@@ -3,14 +3,16 @@ package de.carloschmitt.morec.repository.model;
 import android.util.Log;
 
 import de.carloschmitt.morec.repository.util.ClassificationUtil;
-import de.carloschmitt.morec.repository.util.Constants;
+import de.carloschmitt.morec.repository.Constants;
 
 public class ConfusionMatrix {
     private static final String TAG = "ConfusionMatrix";
     private int[][] matrix;
+    private String name;
 
-    public ConfusionMatrix(int size){
+    public ConfusionMatrix(int size, String name){
         matrix = new int[size][size+1];
+        this.name = name;
     }
 
     public void addValue(float[] predicted, float[] actual){
@@ -65,6 +67,17 @@ public class ConfusionMatrix {
                 ret[i] += matrix[i][j];
             }
         }
+        return ret;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLine(int line){
+        if(line >= matrix.length) return null;
+        String ret = "";
+        for (int i = 0; i < matrix[line].length; i++) ret += ","+ Integer.toString(matrix[line][i]);
         return ret;
     }
 }

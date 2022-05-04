@@ -99,6 +99,9 @@ public class ClassificationRunner implements Runnable{
         }
         long afterClassification = System.currentTimeMillis();
         Log.d(TAG, "Klassifizeriung abgeschlossen. ( " + (afterClassification-beforeClassification) + "ms )");
-
+        List<Long> log = moRecRepository.getRuntime_log().get("ClassificationRunner");
+        if(log == null) log = new ArrayList<>();
+        log.add(afterClassification-beforeClassification);
+        moRecRepository.getRuntime_log().put("ClassificationRunner",log);
     }
 }

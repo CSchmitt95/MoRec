@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.carloschmitt.morec.repository.MoRecRepository;
-import de.carloschmitt.morec.repository.util.Constants;
+import de.carloschmitt.morec.repository.Constants;
 
 public class Sensor {
     private static final String TAG = "Sensor";

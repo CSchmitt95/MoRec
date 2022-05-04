@@ -5,7 +5,12 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -13,7 +18,7 @@ import de.carloschmitt.morec.repository.model.Label;
 import de.carloschmitt.morec.repository.model.ConfusionMatrix;
 import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.runners.ExportRunner;
-import de.carloschmitt.morec.repository.util.Constants;
+import de.carloschmitt.morec.repository.Constants;
 import de.carloschmitt.morec.repository.util.State;
 import de.carloschmitt.morec.repository.runners.ConnectionRunner;
 
@@ -21,29 +26,34 @@ public class MoRecRepository {
     Context context;
     private static final String TAG = "MoRecRepository";
     private static MoRecRepository instance;
+    private String sessionName;
+    //UI STUFF
 
     private MutableLiveData<List<Label>> uiLabels;
-
-    private List<Sensor> sensors;
     private MutableLiveData<List<Sensor>> uiSensors_ui;
-
-    private State state;
     private MutableLiveData<State> state_ui;
-
-    private int currentRecordingLabel;
-
     private MutableLiveData<String> classificationResult;
 
-    private long last_classification;
-    private CountDownLatch signalStop;
-    private float[] current_actual;
+    //App Management
+    private State state;
+    private List<Sensor> sensors;
 
+    //Recording Tools
+    private int currentRecordingLabel;
+
+    //STOP SIGNAL
+    private CountDownLatch signalStop;
+
+
+    //EVALUATION TOOLS
+    private long last_classification;
+    int[] evaluation_label_counter;
+    private float[] current_actual;
     ConfusionMatrix cm_Grtl;
     ConfusionMatrix cm_Handgelenk;
     ConfusionMatrix cm_GrtlHandgelenk;
-
-    int[] evaluation_label_counter;
-
+    String[] labels = {"Stolpern", "Gehen", "Stehen"};
+    HashMap<String, List<Long>> runtime_log;
 
     public MoRecRepository(){
         uiLabels = new MutableLiveData<>(new ArrayList<Label>());
@@ -58,9 +68,11 @@ public class MoRecRepository {
         current_actual = new float[] {0,0,0};
         evaluation_label_counter = new int[3];
 
-        cm_Grtl = new ConfusionMatrix(3);
-        cm_Handgelenk = new ConfusionMatrix(3);
-        cm_GrtlHandgelenk = new ConfusionMatrix(3);
+        cm_Grtl = new ConfusionMatrix(3, "Gürtel");
+        cm_Handgelenk = new ConfusionMatrix(3, "Handgelenk");
+        cm_GrtlHandgelenk = new ConfusionMatrix(3, "GürtelHandgelenk");
+
+        runtime_log = new HashMap<>();
     }
 
     public static MoRecRepository getInstance() {
@@ -145,7 +157,7 @@ public class MoRecRepository {
         uiLabels.getValue().add(new Label("Stehen"));
         uiLabels.getValue().add(new Label("Stolpern"));
 
-        ConfusionMatrix pm = new ConfusionMatrix(3);
+        ConfusionMatrix pm = new ConfusionMatrix(3, "Test");
         float predicted[] = {0f,0.1f,0.9f};
         float actual[] = {0f,0f,1f};
         pm.addValue(predicted, actual);
@@ -240,5 +252,21 @@ public class MoRecRepository {
 
     public ConfusionMatrix getCm_GrtlHandgelenk() {
         return cm_GrtlHandgelenk;
+    }
+
+    public void setSessionName(String sessionName) {
+        this.sessionName = sessionName;
+    }
+
+    public String getSessionName(){
+        return sessionName;
+    }
+
+    public String[] getLabels(){
+        return labels;
+    }
+
+    public HashMap<String, List<Long>> getRuntime_log() {
+        return runtime_log;
     }
 }

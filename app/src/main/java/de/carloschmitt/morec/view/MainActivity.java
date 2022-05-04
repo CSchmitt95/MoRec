@@ -6,12 +6,18 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
+import android.widget.EditText;
 
 import de.carloschmitt.morec.R;
 import de.carloschmitt.morec.databinding.ActivityMainBinding;
 import de.carloschmitt.morec.repository.MoRecRepository;
+import de.carloschmitt.morec.repository.model.Label;
 import de.carloschmitt.morec.viewmodel.ConnectionStateViewModel;
+import de.carloschmitt.morec.viewmodel.LabelPageViewModel;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -24,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         MoRecRepository.getInstance().setContext(getApplicationContext());
 
+        showSessionNameDialog();
+
         ConnectionStateViewModel viewModel = new ViewModelProvider(this).get(ConnectionStateViewModel.class);
         binding.setConnectionStateViewModel(viewModel);
         binding.setLifecycleOwner(this);
@@ -31,5 +39,24 @@ public class MainActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
         NavController navController = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(binding.bottomNavigationView, navController);
+    }
+
+    private void showSessionNameDialog(){
+        android.app.AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+        alertDialogBuilder.setView(input);
+        alertDialogBuilder.setTitle("Sessionnamen eingeben");
+        alertDialogBuilder.setPositiveButton("festlegen",  new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String input_text = input.getText().toString();
+                if( input_text != null && !input_text.trim().isEmpty()) {
+                    MoRecRepository.getInstance().setSessionName(input_text);
+                }
+            }
+        });
+        alertDialogBuilder.create().show();
     }
 }

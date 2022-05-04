@@ -7,6 +7,7 @@ import com.meicke.threeSpaceSensorAndroidAPI.Quaternion;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.carloschmitt.morec.repository.Constants;
 import de.carloschmitt.morec.repository.MoRecRepository;
 
 public class ClassificationUtil {
