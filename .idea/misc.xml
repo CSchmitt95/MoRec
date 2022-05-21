@@ -27,9 +27,9 @@
         <entry key="app/src/main/res/layout/fragment_sensorpage.xml" value="0.2776268115942029" />
         <entry key="app/src/main/res/layout/item_label.xml" value="0.2653985507246377" />
         <entry key="app/src/main/res/layout/item_sensor.xml" value="0.23229166666666667" />
-        <entry key="app/src/main/res/layout/page_classification.xml" value="0.2653985507246377" />
+        <entry key="app/src/main/res/layout/page_classification.xml" value="0.3378411776777628" />
         <entry key="app/src/main/res/layout/page_record.xml" value="0.20643363728470113" />
-        <entry key="app/src/main/res/layout/page_setup.xml" value="0.23229166666666667" />
+        <entry key="app/src/main/res/layout/page_setup.xml" value="0.5272914521112255" />
         <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="0.2791666666666667" />
       </map>
     </option>

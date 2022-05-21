@@ -33,7 +33,7 @@ public class DetailedLabelDialogViewModel extends AndroidViewModel {
         moRecRepository = MoRecRepository.getInstance();
         record_button_enabled = new MutableLiveData<>();
         record_button_text = new MediatorLiveData<>();
-        record_button_text.addSource(moRecRepository.getState_ui(), new Observer<State>() {
+        record_button_text.addSource(moRecRepository.getState(), new Observer<State>() {
             @Override
             public void onChanged(State state) {
                 switch (state){
@@ -81,8 +81,8 @@ public class DetailedLabelDialogViewModel extends AndroidViewModel {
 
     public void setUiLabel(Label label) {
         this.uiLabel = new MutableLiveData<>(label);
-        if(moRecRepository.getUiSensors().size() != 0) {
-            Sensor sensor = moRecRepository.getUiSensors().get(0);
+        if(moRecRepository.getSensors().getValue().size() != 0) {
+            Sensor sensor = moRecRepository.getSensors().getValue().get(0);
             int label_id = uiLabel.getValue().getLabel_id().getValue();
             MutableLiveData<Integer> number_of_samples = sensor.getNumberOfSamplesForUI(label_id);
             record_stats.addSource(number_of_samples, new Observer<Integer>() {
@@ -123,7 +123,7 @@ public class DetailedLabelDialogViewModel extends AndroidViewModel {
 
     public boolean OnTouchListener(View view, MotionEvent event){
         if(event.getAction() == MotionEvent.ACTION_DOWN){
-            if(moRecRepository.getState() == State.CONNECTED) moRecRepository.startRecording(uiLabel.getValue().getLabel_id().getValue());
+            if(moRecRepository.getState().getValue() == State.CONNECTED) moRecRepository.startRecording(uiLabel.getValue().getLabel_id().getValue());
             else moRecRepository.stopRecording();
         }
         if(event.getAction() == MotionEvent.ACTION_UP){

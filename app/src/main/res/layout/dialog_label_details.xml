@@ -26,38 +26,40 @@
                 android:text="@={DetailedLabelDialogViewModel.movementName}"
                 android:inputType="textPersonName" />
 
-            <TextView
-                android:id="@+id/tv_sampleCount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{DetailedLabelDialogViewModel.record_stats}"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center|top"
                 android:orientation="horizontal">
 
+                <TextView
+                    android:id="@+id/tv_sampleCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{DetailedLabelDialogViewModel.record_stats}"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
                 <CheckBox
                     android:id="@+id/cb_event"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
                     android:checked="@={DetailedLabelDialogViewModel.HoldToRecordChecked}"
-                    android:text="Hold to record" />
-
-                <Button
-                    android:id="@+id/btn_record"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0"
                     android:padding="10dp"
-                    app:OnTouchListener="@{DetailedLabelDialogViewModel::OnTouchListener}"
-                    android:enabled="@{DetailedLabelDialogViewModel.record_button_enabled}"
-                    android:text="@{DetailedLabelDialogViewModel.record_button_text}" />
+                    android:text="Halten zum\nAufnehmen" />
+
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_record"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:enabled="@{DetailedLabelDialogViewModel.record_button_enabled}"
+                android:padding="10dp"
+                android:text="@{DetailedLabelDialogViewModel.record_button_text}"
+                app:OnTouchListener="@{DetailedLabelDialogViewModel::OnTouchListener}" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

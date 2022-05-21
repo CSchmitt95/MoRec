@@ -12,7 +12,7 @@ import de.carloschmitt.morec.repository.MoRecRepository;
 
 public class ConnectionStateViewModel extends AndroidViewModel {
     private static final String TAG = "ConnectionStateViewModel";
-    private MutableLiveData<State> applicationState = MoRecRepository.getInstance().getState_ui();
+    private MutableLiveData<State> applicationState = MoRecRepository.getInstance().getState();
 
     public MediatorLiveData<String> status;
 

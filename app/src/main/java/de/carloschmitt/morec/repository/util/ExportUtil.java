@@ -2,8 +2,11 @@ package de.carloschmitt.morec.repository.util;
 
 import com.meicke.threeSpaceSensorAndroidAPI.Quaternion;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
+import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.model.Label;
 import de.carloschmitt.morec.repository.model.Sample;
 
@@ -57,4 +60,29 @@ public class ExportUtil {
         }
         return ret;
     }
+
+    public static int findStartOfNextLabel(int current_index, List<Sample> samples){
+        for(int i = current_index; i < samples.size(); i++){
+            if (samples.get(i).getLabel_id() != -1) return i;
+        }
+        return samples.size();
+    }
+
+    public static Label findLabelWithId(int id){
+        Label ret = null;
+        for(Label label : MoRecRepository.getInstance().getLabels().getValue()){
+            if(label.getLabel_id().getValue() == id) ret = label;
+        }
+        return ret;
+    }
+
+    public static void writeQuaternionsToFile(String label_text, String sensor_name, int record_id, int extract_start, int extract_end, List<Sample> samples, FileWriter writer) throws IOException {
+        writer.append(label_text + "," + sensor_name + ","+ record_id);
+        for(int i = extract_start; i < extract_end; i++){
+            Quaternion q = samples.get(i).getQuaternion();
+            writer.append("," + q.getW() + "," + q.getX() + "," + q.getY() + "," + q.getZ());
+        }
+        writer.append("\n");
+    }
+
 }

@@ -1,7 +1,6 @@
 package de.carloschmitt.morec.viewmodel;
 
 import android.app.Application;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -20,6 +19,7 @@ public class ClassificationPageViewModel extends AndroidViewModel {
     private MediatorLiveData<String> classify_button_text;
     private MutableLiveData<Boolean> classify_button_enabled;
     private MutableLiveData<String> result_text;
+    private MutableLiveData<String> eval_text;
     private boolean still_started;
 
     public ClassificationPageViewModel(@NonNull Application application) {
@@ -28,11 +28,11 @@ public class ClassificationPageViewModel extends AndroidViewModel {
 
         classify_button_enabled = new MutableLiveData<>();
         result_text = moRecRepository.getClassificationResult();
-
+        eval_text = moRecRepository.getClassificationEvaluation();
         still_started = false;
 
         classify_button_text = new MediatorLiveData<>();
-        classify_button_text.addSource(moRecRepository.getState_ui(), new Observer<State>() {
+        classify_button_text.addSource(moRecRepository.getState(), new Observer<State>() {
             @Override
             public void onChanged(State state) {
                 switch (state){
@@ -76,8 +76,10 @@ public class ClassificationPageViewModel extends AndroidViewModel {
         return result_text;
     }
 
+    public MutableLiveData<String> getEval_text() {return eval_text; }
+
     public void OnClick(View view){
-        switch (moRecRepository.getState()){
+        switch (moRecRepository.getState().getValue()){
             case CONNECTED:
                 moRecRepository.startClassifying();
                 break;
@@ -98,13 +100,13 @@ public class ClassificationPageViewModel extends AndroidViewModel {
                         if(!still_started) return;
                         switch (view.getId()){
                             case R.id.btn_gehen:
-                                actual[1] = 1;
+                                actual[0] = 1;
                                 break;
                             case R.id.btn_stehen:
-                                actual[2] = 1;
+                                actual[1] = 1;
                                 break;
                             case R.id.btn_stolpern:
-                                actual[0] = 1;
+                                actual[2] = 1;
                                 break;
                         }
                     }

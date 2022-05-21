@@ -4,23 +4,13 @@ import android.util.Log;
 
 import com.meicke.threeSpaceSensorAndroidAPI.Quaternion;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import de.carloschmitt.morec.repository.MoRecRepository;
-import de.carloschmitt.morec.repository.model.Label;
 import de.carloschmitt.morec.repository.model.Sensor;
-import de.carloschmitt.morec.repository.util.ClassificationUtil;
 import de.carloschmitt.morec.repository.Constants;
-import de.carloschmitt.morec.repository.util.ExportUtil;
-import de.carloschmitt.morec.repository.util.State;
 
 
 public class BackgroundRunner implements Runnable{
@@ -37,7 +27,7 @@ public class BackgroundRunner implements Runnable{
         long start = System.currentTimeMillis();
         moRecRepository = MoRecRepository.getInstance();
 
-        switch (moRecRepository.getState()){
+        switch (moRecRepository.getState().getValue()){
             case CLASSIFYING:
                 recordQuaternion();
                 doClassification();
@@ -68,7 +58,7 @@ public class BackgroundRunner implements Runnable{
 
     private void recordQuaternion(){
         boolean a_sensor_died = false;
-        for(Sensor sensor : moRecRepository.getUiSensors()){
+        for(Sensor sensor : moRecRepository.getSensors().getValue()){
             try{
                 sensor.recordQuaternion();
                 if(sensor.died()) a_sensor_died = true;
@@ -82,7 +72,7 @@ public class BackgroundRunner implements Runnable{
 
     private void doClassification(){
         //Checken ob ein Buffer bereit ist.
-        for(Sensor s : moRecRepository.getUiSensors()){
+        for(Sensor s : moRecRepository.getSensors().getValue()){
             if (!s.bufferIsSaturated()){
                 Log.d(TAG, "Buffer ist noch nicht bereit");
                 return;
@@ -96,7 +86,7 @@ public class BackgroundRunner implements Runnable{
         Log.d(TAG, "Sammle Sensordaten...");
         long beforeData = System.currentTimeMillis();
         List<List<Quaternion>> input = new ArrayList<>();
-        for(Sensor s : moRecRepository.getUiSensors()){
+        for(Sensor s : moRecRepository.getSensors().getValue()){
             List<Quaternion> rawQuaternions = s.getLastNQuaternions(Constants.SAMPLES_PER_SECOND*Constants.WINDOW_SIZE_IN_S +1);
             input.add(rawQuaternions);
         }

@@ -21,7 +21,7 @@ public class Label {
         label_text = name;
         label_text_ui = new MutableLiveData<>(label_text);
         holdToRecord = new MutableLiveData<>(false);
-        MutableLiveData<Integer> number_of_samples = MoRecRepository.getInstance().getUiSensors().get(0).getNumberOfSamplesForUI(label_id.getValue());
+        MutableLiveData<Integer> number_of_samples = MoRecRepository.getInstance().getSensors().getValue().get(0).getNumberOfSamplesForUI(label_id.getValue());
         recording_stats = new MediatorLiveData<>();
         recording_stats.addSource(number_of_samples, new Observer<Integer>() {
             @Override

@@ -38,14 +38,14 @@ public class DetailedLabelDialogue extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(binding.getRoot());
         builder.setTitle("Aufzeichnung");
-        builder.setNegativeButton("Löschen", new DialogInterface.OnClickListener() {
+        /*builder.setNegativeButton("Löschen", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 labelPageViewModel.removeLabel(labelPageViewModel.getDetailViewMovement());
             }
-        });
+        });*/
 
-        builder.setPositiveButton("Schliessen",  null);
+        //builder.setPositiveButton("Schliessen",  null);
 
         return builder.create();
     }

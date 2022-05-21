@@ -12,15 +12,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import de.carloschmitt.morec.R;
 import de.carloschmitt.morec.databinding.ItemSensorBinding;
+import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.model.Sensor;
+import de.carloschmitt.morec.repository.util.State;
 import de.carloschmitt.morec.view.activities.MainActivity;
 import de.carloschmitt.morec.viewmodel.SetupPageViewModel;
 
-public class UISensorAdapter extends ListAdapter<Sensor,RecyclerView.ViewHolder> {
+public class SensorAdapter extends ListAdapter<Sensor,RecyclerView.ViewHolder> {
     private final String TAG = "UISensorAdapter";
     SetupPageViewModel setupPageViewModel;
 
-    public UISensorAdapter(SetupPageViewModel setupPageViewModel){
+    public SensorAdapter(SetupPageViewModel setupPageViewModel){
         super(DIFF_CALLBACK);
         this.setupPageViewModel = setupPageViewModel;
     }
@@ -68,9 +70,11 @@ public class UISensorAdapter extends ListAdapter<Sensor,RecyclerView.ViewHolder>
 
         @Override
         public void onClick(View v) {
-            Sensor clicked = itemSensorBinding.getSensor();
-            setupPageViewModel.setSelectedSensor(clicked);
-            Navigation.findNavController(v).navigate(R.id.open_setupDialogue);
+            if(MoRecRepository.getInstance().getState().getValue() == State.INACTIVE){
+                Sensor clicked = itemSensorBinding.getSensor();
+                setupPageViewModel.setSelectedSensor(clicked);
+                Navigation.findNavController(v).navigate(R.id.open_setupDialogue);
+            }
         }
     }
 }

@@ -58,7 +58,7 @@ public class Sensor {
     }
 
     public void createConnection() throws TssConnectionException, TssCommunicationException {
-        tssMiniBluetooth = new TssMiniBluetooth(address, true);
+        tssMiniBluetooth = new TssMiniBluetooth(live_address.getValue(), true);
         tssMiniBluetooth.startStream();
         num_of_duplicates = 0;
         max_num_of_duplicates = 0;

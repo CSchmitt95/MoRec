@@ -19,53 +19,55 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingBottom="120dp"
-            tools:layout_editor_absoluteX="10dp"
-            tools:layout_editor_absoluteY="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/item_sensor">
 
         </androidx.recyclerview.widget.RecyclerView>
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
-        app:cardElevation="5dp"
-        app:contentPadding="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
-
-        <LinearLayout
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center|center_horizontal|fill_vertical|end"
-            android:orientation="vertical"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            app:cardElevation="15dp"
+            app:contentPadding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0">
 
-            <Button
-                android:id="@+id/btn_addSensor"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Sensor hinzufügen"
-                android:enabled="@{SetupPageViewModel.addSensor_button_enabled}"
-                android:onClick="@{view -> Navigation.findNavController(view).navigate(R.id.open_setupDialogue)}"/>
+                android:layout_height="match_parent"
+                android:gravity="center|center_horizontal|fill_vertical|end"
+                android:orientation="vertical"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp">
 
-            <Button
-                android:id="@+id/btn_connect_sensors"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{SetupPageViewModel.connect_button_text}"
-                android:enabled="@{SetupPageViewModel.connect_button_enabled}"
-                android:onClick="@{() -> SetupPageViewModel.onConnectClicked()}"/>
-        </LinearLayout>
+                <Button
+                    android:id="@+id/btn_addSensor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{SetupPageViewModel.addSensor_button_enabled}"
+                    android:onClick="@{view -> Navigation.findNavController(view).navigate(R.id.open_setupDialogue)}"
+                    android:text="Sensor hinzufügen" />
 
-    </androidx.cardview.widget.CardView>
+                <Button
+                    android:id="@+id/btn_connect_sensors"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{SetupPageViewModel.connect_button_enabled}"
+                    android:onClick="@{() -> SetupPageViewModel.onConnectClicked()}"
+                    android:text="@{SetupPageViewModel.connect_button_text}" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

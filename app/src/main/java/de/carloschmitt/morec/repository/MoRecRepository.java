@@ -5,10 +5,6 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,62 +14,78 @@ import de.carloschmitt.morec.repository.model.Label;
 import de.carloschmitt.morec.repository.model.ConfusionMatrix;
 import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.runners.ExportRunner;
-import de.carloschmitt.morec.repository.Constants;
 import de.carloschmitt.morec.repository.util.State;
 import de.carloschmitt.morec.repository.runners.ConnectionRunner;
 
 public class MoRecRepository {
-    Context context;
     private static final String TAG = "MoRecRepository";
     private static MoRecRepository instance;
+
+    private MutableLiveData<State> state;
+    private Context context;
     private String sessionName;
-    //UI STUFF
 
-    private MutableLiveData<List<Label>> uiLabels;
-    private MutableLiveData<List<Sensor>> uiSensors_ui;
-    private MutableLiveData<State> state_ui;
-    private MutableLiveData<String> classificationResult;
+    //Connection
+    private MutableLiveData<List<Sensor>> sensors;
+    private CountDownLatch disconnectSignal;
 
-    //App Management
-    private State state;
-    private List<Sensor> sensors;
-
-    //Recording Tools
+    //Recording
+    private MutableLiveData<List<Label>> labels;
     private int currentRecordingLabel;
 
-    //STOP SIGNAL
-    private CountDownLatch signalStop;
+    //Classification
+    String[] modelLabels = {"Gehen", "Stehen", "Stolpern"};
+    String[] requiredSensors = {"Guertel", "Handgelenk"};
 
+    private long last_classification;
+    private MutableLiveData<String> classificationResult;
 
     //EVALUATION TOOLS
-    private long last_classification;
     int[] evaluation_label_counter;
     private float[] current_actual;
     ConfusionMatrix cm_Grtl;
     ConfusionMatrix cm_Handgelenk;
     ConfusionMatrix cm_GrtlHandgelenk;
-    String[] labels = {"Stolpern", "Gehen", "Stehen"};
+    private MutableLiveData<String> classificationEvaluation;
     HashMap<String, List<Long>> runtime_log;
 
+    //Export
+    private MutableLiveData<String> exportProgress;
+
+
     public MoRecRepository(){
-        uiLabels = new MutableLiveData<>(new ArrayList<Label>());
-        sensors = new ArrayList<>();
-        uiSensors_ui = new MutableLiveData<>(sensors);
-        state = State.INACTIVE;
-        state_ui = new MutableLiveData<>(state);
+        state = new MutableLiveData<>(State.INACTIVE);
+        labels = new MutableLiveData<>(new ArrayList<Label>());
+        sensors = new MutableLiveData<>(new ArrayList<>());
+
+        disconnectSignal = null;
+
         currentRecordingLabel = -1;
+
         classificationResult = new MutableLiveData<>("Noch kein Ergebnis");
         last_classification = System.currentTimeMillis();
-        signalStop = null;
-        current_actual = new float[] {0,0,0};
+
+        exportProgress = new MutableLiveData<>("Exportiere ( 0% )");
+
         evaluation_label_counter = new int[3];
-
-        cm_Grtl = new ConfusionMatrix(3, "Gürtel");
-        cm_Handgelenk = new ConfusionMatrix(3, "Handgelenk");
-        cm_GrtlHandgelenk = new ConfusionMatrix(3, "GürtelHandgelenk");
-
+        current_actual = new float[] {0,0,0};
+        cm_Grtl = new ConfusionMatrix(3, "Guertel_realtime");
+        cm_Handgelenk = new ConfusionMatrix(3, "Handgelenk_realtime");
+        cm_GrtlHandgelenk = new ConfusionMatrix(3, "GuertelHandgelenk_realtime");
+        classificationEvaluation = new MutableLiveData<>("");
         runtime_log = new HashMap<>();
     }
+
+
+    public void init(){
+        sensors.getValue().add(new Sensor("Guertel", "00:0E:0E:16:8F:F6"));
+        sensors.getValue().add(new Sensor("Handgelenk", "00:0E:0E:1B:60:DE"));
+
+        labels.getValue().add(new Label("Gehen"));
+        labels.getValue().add(new Label("Stehen"));
+        labels.getValue().add(new Label("Stolpern"));
+    }
+
 
     public static MoRecRepository getInstance() {
         if(instance == null){
@@ -83,38 +95,81 @@ public class MoRecRepository {
         return instance;
     }
 
-    public MutableLiveData<List<Label>> getUiLabels() {
-        return uiLabels;
+    /**
+     * State Management
+     */
+
+    public MutableLiveData<State> getState() {
+        return state;
     }
 
-    public MutableLiveData<List<Sensor>> getUiSensors_ui() {
-        return uiSensors_ui;
+    public void setState(State state) {
+        this.state.postValue(state);
     }
 
-    public MutableLiveData<State> getState_ui() {
-        return state_ui;
+    public Context getContext() {
+        return context;
     }
 
-    public MutableLiveData<String> getClassificationResult() {
-        return classificationResult;
+    public void setContext(Context context) {
+        this.context = context;
     }
 
+    /**
+     * List Management
+     */
+    public MutableLiveData<List<Label>> getLabels() {
+        return labels;
+    }
+
+    public MutableLiveData<List<Sensor>> getSensors() {
+        return sensors;
+    }
+
+    public void addLabel(Label label){
+        List<Label> old_Labels = labels.getValue();
+        old_Labels.add(label);
+        labels.postValue(old_Labels);
+    }
+
+    public void removeLabel(Label label){
+        List<Label> old_Labels = labels.getValue();
+        old_Labels.remove(label);
+        labels.postValue(old_Labels);
+    }
+    public void addSensor(Sensor sensor){
+        sensors.getValue().add(sensor);
+        sensors.postValue(sensors.getValue());
+    }
+
+    public void removeSensor(Sensor sensor){
+        sensors.getValue().remove(sensor);
+        sensors.postValue(sensors.getValue());
+    }
+
+
+
+    /**
+     * Connection Control
+     */
     public void connectSensors(){
-        if(state != State.INACTIVE) return;
-        setState(State.CONNECTING);
+        if(state.getValue() != State.INACTIVE) return;
 
-        // Der Thread setzt bei Beendigung den Status auf CONNECTED ODER INACTIVE
-        Thread connectionThread = new Thread(new ConnectionRunner());
+        disconnectSignal = new CountDownLatch(1);
+        Thread connectionThread = new Thread(new ConnectionRunner(disconnectSignal));
         connectionThread.start();
     }
 
-    public void disconnectSensors(){
-        if(state != State.CONNECTED && state != State.CONNECTING) return;
-        signalStop.countDown();
+    public void triggerDisconnectSignal(){
+        if(disconnectSignal != null) disconnectSignal.countDown();
     }
 
+
+    /**
+     * Recording Control
+     */
     public void startRecording(int label_id){
-        if(state == State.CONNECTED){
+        if(state.getValue() == State.CONNECTED){
             currentRecordingLabel = label_id;
             setState(State.RECORDING);
         }
@@ -122,74 +177,38 @@ public class MoRecRepository {
     }
 
     public void stopRecording(){
-        if(state == State.RECORDING){
+        if(state.getValue() == State.RECORDING){
             setState(State.CONNECTED);
             currentRecordingLabel = -1;
         }
         else Log.d(TAG, "Something went wrong... We weren't recording...");
-    }
-    public void addLabel(Label label){
-        List<Label> old_Labels = uiLabels.getValue();
-        old_Labels.add(label);
-        uiLabels.postValue(old_Labels);
-    }
-
-    public void removeLabel(Label label){
-        List<Label> old_Labels = uiLabels.getValue();
-        old_Labels.remove(label);
-        uiLabels.postValue(old_Labels);
-    }
-    public void addUISensor(Sensor sensor){
-        sensors.add(sensor);
-        uiSensors_ui.postValue(sensors);
-    }
-
-    public void removeUISensor(Sensor sensor){
-        sensors.remove(sensor);
-        uiSensors_ui.postValue(sensors);
-    }
-
-    public void init(){
-        uiSensors_ui.getValue().add(new Sensor("Guertel", "00:0E:0E:16:8F:F6"));
-        uiSensors_ui.getValue().add(new Sensor("Handgelenk", "00:0E:0E:1B:60:DE"));
-
-        uiLabels.getValue().add(new Label("Gehen"));
-        uiLabels.getValue().add(new Label("Stehen"));
-        uiLabels.getValue().add(new Label("Stolpern"));
-
-        ConfusionMatrix pm = new ConfusionMatrix(3, "Test");
-        float predicted[] = {0f,0.1f,0.9f};
-        float actual[] = {0f,0f,1f};
-        pm.addValue(predicted, actual);
     }
 
     public int getCurrentRecordingLabel() {
         return currentRecordingLabel;
     }
 
-    public void setCurrentRecordingLabel(int currentRecordingLabel) {
-        this.currentRecordingLabel = currentRecordingLabel;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-        state_ui.postValue(state);
-    }
-
+    /**
+     * Classification Control
+     *
+     */
     public void startClassifying(){
-        if(state == State.CONNECTED) setState(State.CLASSIFYING);
+        if(state.getValue() == State.CONNECTED && requiredSensorsActive()) {
+            setState(State.CLASSIFYING);
+        }
     }
-
     public void stopClassifying(){
-        if(state == State.CLASSIFYING) setState(State.CONNECTED);
+        if(state.getValue() == State.CLASSIFYING) {
+            setState(State.CONNECTED);
+            classificationResult.setValue("Klassifizierung gestoppt");
+        }
     }
 
     public void setClassificationResult(String result){
         classificationResult.postValue(result);
+    }
+    public MutableLiveData<String> getClassificationResult() {
+        return classificationResult;
     }
 
     public boolean checkClassificationCooldown(){
@@ -202,44 +221,57 @@ public class MoRecRepository {
         last_classification = System.currentTimeMillis();
     }
 
-    public Context getContext() {
-        return context;
+    public String[] getModelLabels(){
+        return modelLabels;
     }
 
-    public void setContext(Context context) {
-        this.context = context;
+    private boolean requiredSensorsActive(){
+        boolean ret = true;
+        try{
+            Log.d(TAG, "Checking if required sensors are there....");
+            if(requiredSensors.length != sensors.getValue().size()) {
+                Log.d(TAG, "Länge passt");
+                ret = false;
+            }
+            for(int i = 0; i < requiredSensors.length; i++) {
+                if(!requiredSensors[i].equals(sensors.getValue().get(i).getLive_name().getValue())){
+                    ret = false;
+                    Log.d(TAG, i + " passt nicht. "+ sensors.getValue().get(i).getLive_name().getValue());
+                }
+            }
+        }catch (Exception e) {
+            Log.d(TAG, "Exception: " + e.toString());
+            ret = false;
+        }
+        return ret;
     }
 
-    public CountDownLatch getSignalStop() {
-        return signalStop;
-    }
-
-    public void resetStopSignal(){
-        signalStop = new CountDownLatch(1);
-    }
-
-    public void triggerStopSignal(){
-        if(signalStop != null) signalStop.countDown();
-    }
-
+    /**
+     * Export control
+     */
     public void exportData(){
-        if(state == State.INACTIVE){
+        if(state.getValue() == State.INACTIVE){
             ExportRunner exportRunner = new ExportRunner();
             Thread exportThread = new Thread(exportRunner);
             exportThread.start();
         }
     }
 
-    public List<Sensor> getUiSensors() {
-        return sensors;
+    public void setExportProgress(String progress){
+        exportProgress.postValue(progress);
     }
 
+    public MutableLiveData<String> getExportProgress() {
+        return exportProgress;
+    }
+
+
+    /**
+     * Stuff for Evaluation Experiments
+     *
+     */
     public float[] getCurrent_actual() {
         return current_actual;
-    }
-
-    public void setCurrent_actual(float[] current_actual) {
-        this.current_actual = current_actual;
     }
 
     public ConfusionMatrix getCm_Grtl() {
@@ -262,11 +294,15 @@ public class MoRecRepository {
         return sessionName;
     }
 
-    public String[] getLabels(){
-        return labels;
-    }
-
     public HashMap<String, List<Long>> getRuntime_log() {
         return runtime_log;
+    }
+
+    public MutableLiveData<String> getClassificationEvaluation() {
+        return classificationEvaluation;
+    }
+
+    public void setClassificationEvaluation(String classificationEvaluation) {
+        this.classificationEvaluation.postValue(classificationEvaluation);
     }
 }

@@ -25,21 +25,22 @@
 
 
             <TextView
-                android:id="@+id/textView"
-                style="@style/Widget.AppCompat.TextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="DIFF - Nulling - Confidence 90%"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-
-            <TextView
                 android:id="@+id/txt_result"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20sp"
-                android:layout_weight="1"
+                android:layout_weight="0"
                 android:text="@{ClassificationPageViewModel.result_text}"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <TextView
+                android:id="@+id/txt_eval"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20sp"
+                android:layout_weight="1"
+                android:text="@{ClassificationPageViewModel.eval_text}"
                 android:textAlignment="textStart" />
 
         </LinearLayout>
@@ -52,7 +53,8 @@
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp"
             android:layout_weight="0"
-            app:cardElevation="5dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardElevation="15dp"
             app:contentPadding="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/list"
@@ -83,15 +85,6 @@
                     android:paddingTop="25sp">
 
                     <Button
-                        android:id="@+id/btn_stolpern"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:enabled="@{ClassificationPageViewModel.classify_button_enabled}"
-                        android:text="stolpern"
-                        app:OnTouchListener="@{ClassificationPageViewModel::OnTouchListener}" />
-
-                    <Button
                         android:id="@+id/btn_gehen"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -107,6 +100,15 @@
                         android:layout_weight="1"
                         android:enabled="@{ClassificationPageViewModel.classify_button_enabled}"
                         android:text="Stehen"
+                        app:OnTouchListener="@{ClassificationPageViewModel::OnTouchListener}" />
+
+                    <Button
+                        android:id="@+id/btn_stolpern"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:enabled="@{ClassificationPageViewModel.classify_button_enabled}"
+                        android:text="stolpern"
                         app:OnTouchListener="@{ClassificationPageViewModel::OnTouchListener}" />
                 </LinearLayout>
             </LinearLayout>

@@ -14,5 +14,5 @@ public class Constants {
     public static final float CLASSIFICATION_EVERY_X_SECONDS = 1;
     public static final long CLASSIFICATION_COOLDOWN = (long)(1000*CLASSIFICATION_EVERY_X_SECONDS);
     public static final int SENSOR_HEALTH_THRESHHOLD = SAMPLES_PER_SECOND*2;
-    public static final float CONFIDENCE_THRESHHOLD = 0.9f;
+    public static final float CONFIDENCE_THRESHHOLD = 0.0f;
 }

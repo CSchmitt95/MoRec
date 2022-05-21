@@ -1,7 +1,5 @@
 package de.carloschmitt.morec.repository.util;
 
-import android.util.Log;
-
 import com.meicke.threeSpaceSensorAndroidAPI.Quaternion;
 
 import java.util.ArrayList;
@@ -81,10 +79,10 @@ public class ClassificationUtil {
 
     public static String getConflictString(String[] results){
         String ret = "";
-        String[] sensor_names = new String[MoRecRepository.getInstance().getUiSensors().size() + 1];
+        String[] sensor_names = new String[MoRecRepository.getInstance().getSensors().getValue().size() + 1];
         sensor_names[0] = "Kombo";
         for(int i = 1; i < sensor_names.length; i++) {
-            sensor_names[i] = MoRecRepository.getInstance().getUiSensors().get(i-1).getName();
+            sensor_names[i] = MoRecRepository.getInstance().getSensors().getValue().get(i-1).getName();
         }
         for(int i = 1; i < results.length; i++){
             for(int j = i; j < results.length; j++){

@@ -33,10 +33,10 @@ public class SetupPageViewModel extends AndroidViewModel {
         connect_button_enabled = new MutableLiveData<>();
         addSensor_button_enabled = new MutableLiveData<>();
         selectedSensor = new MutableLiveData<>();
-        uiSensors = moRecRepository.getUiSensors_ui();
+        uiSensors = moRecRepository.getSensors();
 
         connect_button_text = new MediatorLiveData<>();
-        connect_button_text.addSource(moRecRepository.getState_ui(), new Observer<State>() {
+        connect_button_text.addSource(moRecRepository.getState(), new Observer<State>() {
             @Override
             public void onChanged(State state) {
                 switch (state){
@@ -95,14 +95,14 @@ public class SetupPageViewModel extends AndroidViewModel {
         return uiSensors;
     }
 
-    public void addUISensor(Sensor sensor) { moRecRepository.addUISensor(sensor); }
+    public void addUISensor(Sensor sensor) { moRecRepository.addSensor(sensor); }
 
-    public void deleteUISensor(Sensor sensor) { moRecRepository.removeUISensor(sensor); }
+    public void deleteUISensor(Sensor sensor) { moRecRepository.removeSensor(sensor); }
 
     public void onConnectClicked(){
-        switch (moRecRepository.getState_ui().getValue()){
+        switch (moRecRepository.getState().getValue()){
             case CONNECTED:
-                moRecRepository.triggerStopSignal();
+                moRecRepository.triggerDisconnectSignal();
                 break;
             case INACTIVE:
                 moRecRepository.connectSensors();
@@ -126,7 +126,7 @@ public class SetupPageViewModel extends AndroidViewModel {
 
         Log.d(TAG, name + address);
         if(!name.trim().isEmpty() && !address.trim().isEmpty()){
-            if(!uiSensors.getValue().contains(selectedSensor.getValue())) moRecRepository.addUISensor(selectedSensor.getValue());
+            if(!uiSensors.getValue().contains(selectedSensor.getValue())) moRecRepository.addSensor(selectedSensor.getValue());
         }
         else {
             deleteUISensor(selectedSensor.getValue());

@@ -15,7 +15,6 @@ import de.carloschmitt.morec.ml.Grtel;
 import de.carloschmitt.morec.ml.GrtelHandgelenk;
 import de.carloschmitt.morec.ml.Handgelenk;
 import de.carloschmitt.morec.repository.MoRecRepository;
-import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.util.ClassificationUtil;
 
 public class ClassificationRunner implements Runnable{
@@ -40,7 +39,7 @@ public class ClassificationRunner implements Runnable{
             }
 
             Log.d(TAG, "Klassifiziere...");
-            String[] labels = {"Stolpern", "Gehen", "Stehen"};
+            String[] labels = moRecRepository.getModelLabels();
 
             float[] grtlHandgelenk_input = ClassificationUtil.allQuaternionsToFloat(processed_input);
             float[] grtl_input = ClassificationUtil.sensorQuaternionsToFloat(0,processed_input);
@@ -80,18 +79,13 @@ public class ClassificationRunner implements Runnable{
             results[1] = ClassificationUtil.getMostProbableLabel(labels, result_Grtl);
             results[2] = ClassificationUtil.getMostProbableLabel(labels, result_Handgelenk);
 
-            moRecRepository.setClassificationResult("Kombo:\n" + moRecRepository.getCm_GrtlHandgelenk().toString() +
+            moRecRepository.setClassificationResult(results[0]);
+
+            moRecRepository.setClassificationEvaluation("Kombo:\n" + moRecRepository.getCm_GrtlHandgelenk().toString() +
                     "\n\nGürtel:\n" + moRecRepository.getCm_Grtl().toString() +
                     "\n\nHandgelenk:\n" + moRecRepository.getCm_Handgelenk().toString() +
-                    "\n\nCounter:\n " + ClassificationUtil.getValuesWithLabels(moRecRepository.getCm_GrtlHandgelenk().getSumsOfActuals(), labels) +
-                    "\n\nKonflikte:\n" + ClassificationUtil.getConflictString(results));
+                    "\n\nCounter:\n " + ClassificationUtil.getValuesWithLabels(moRecRepository.getCm_GrtlHandgelenk().getSumsOfActuals(), labels));
 
-
-            /*moRecRepository.setClassificationResult("Kombo:\n" + ClassificationUtil.getResultString(labels,result_GrtlHandgelenk) +
-                    "\n\nGürtel:\n" + ClassificationUtil.getResultString(labels,result_Grtl) +
-                    "\n\nHandgelenk:\n" + ClassificationUtil.getResultString(labels, result_Handgelenk)+
-                    "\n\nKonflikte:\n" + ClassificationUtil.getConflictString(results));
-            */
         } catch (IOException e) {
 
             e.printStackTrace();

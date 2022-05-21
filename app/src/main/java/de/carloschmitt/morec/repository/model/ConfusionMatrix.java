@@ -2,6 +2,7 @@ package de.carloschmitt.morec.repository.model;
 
 import android.util.Log;
 
+import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.util.ClassificationUtil;
 import de.carloschmitt.morec.repository.Constants;
 
@@ -50,8 +51,14 @@ public class ConfusionMatrix {
 
     @Override
     public String toString(){
-        String ret = "";
+        String ret = "\t\t\t\t\t\t";
+        for(String label : MoRecRepository.getInstance().getModelLabels()){
+            ret += label + " ";
+        }
+        ret +="\n";
+
         for(int i = 0; i < matrix.length; i ++){
+            ret += MoRecRepository.getInstance().getModelLabels()[i] + "\t";
             for(int j = 0 ; j < matrix[i].length; j++){
                 ret += " [" + matrix[i][j] + "] ";
             }

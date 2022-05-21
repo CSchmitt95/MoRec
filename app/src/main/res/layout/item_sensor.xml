@@ -72,7 +72,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sensor Health: "
+                        android:text="Sensor Gesundheit: "
                         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     <TextView
@@ -100,7 +100,7 @@
                     android:checked="@{sensor.live_paired}"
                     android:enabled="false"
                     android:gravity="center|left"
-                    android:text="Paired"
+                    android:text="Gekoppelt"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -111,7 +111,7 @@
                     android:checked="@{sensor.live_connected}"
                     android:enabled="false"
                     android:gravity="center|left"
-                    android:text="Connected"
+                    android:text="Verbunden"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/chk_paired" />

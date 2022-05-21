@@ -1,5 +1,7 @@
 package de.carloschmitt.morec.view;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import de.carloschmitt.morec.adapters.UISensorAdapter;
 import de.carloschmitt.morec.databinding.PageSetupBinding;
 import de.carloschmitt.morec.viewmodel.SetupPageViewModel;
 
@@ -32,9 +33,9 @@ public class SetupPage extends Fragment {
 
         //RecylcerView
         binding.rvSensors.setLayoutManager(new LinearLayoutManager(getActivity()));
-        UISensorAdapter uiSensorAdapter = new UISensorAdapter(setupPageViewModel);
-        setupPageViewModel.getUiSensors().observe(getViewLifecycleOwner(), list -> uiSensorAdapter.submitList(new ArrayList<>(list)));
-        binding.rvSensors.setAdapter(uiSensorAdapter);
+        de.carloschmitt.morec.adapters.SensorAdapter sensorAdapter = new de.carloschmitt.morec.adapters.SensorAdapter(setupPageViewModel);
+        setupPageViewModel.getUiSensors().observe(getViewLifecycleOwner(), list -> sensorAdapter.submitList(new ArrayList<>(list)));
+        binding.rvSensors.setAdapter(sensorAdapter);
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
@@ -45,12 +46,28 @@ public class SetupPage extends Fragment {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 if(setupPageViewModel.getAddSensor_button_enabled().getValue()){
-                    setupPageViewModel.deleteUISensor(uiSensorAdapter.getUISensorAt(viewHolder.getBindingAdapterPosition()));
-                    //Toast.makeText(getActivity(), "Sensor entfernt", Toast.LENGTH_SHORT).show();
+
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which){
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    setupPageViewModel.deleteUISensor(sensorAdapter.getUISensorAt(viewHolder.getBindingAdapterPosition()));
+                                    Toast.makeText(getActivity(), "Sensor entfernt", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    sensorAdapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
+                                    break;
+                            }
+                        }
+                    };
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage("Soll der Sensor wirklich entfernt werden?").setPositiveButton("Ja", dialogClickListener)
+                            .setNegativeButton("Nein", dialogClickListener).show();
                 }
                 else{
                     Toast.makeText(getActivity(), "Sensor kann gerade nicht entfernt werden", Toast.LENGTH_SHORT).show();
-                    //uiSensorAdapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
+                    sensorAdapter.notifyItemChanged(viewHolder.getBindingAdapterPosition());
                 }
             }
         }).attachToRecyclerView(binding.rvSensors);

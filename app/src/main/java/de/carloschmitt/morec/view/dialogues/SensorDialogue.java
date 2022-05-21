@@ -35,7 +35,7 @@ public class SensorDialogue extends DialogFragment {
         Sensor sensor = setupPageViewModel.getSelectedSensor().getValue();
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         if (sensor == null) {
-            int sensornumber = MoRecRepository.getInstance().getUiSensors().size() + 1;
+            int sensornumber = MoRecRepository.getInstance().getSensors().getValue().size() + 1;
             alertDialogBuilder.setTitle("Sensor hinzufügen");
             sensor = new Sensor("Sensor " + sensornumber, "00:00:00:00:00:00");
             setupPageViewModel.setSelectedSensor(sensor);

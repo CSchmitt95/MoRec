@@ -28,10 +28,10 @@ public class LabelPageViewModel extends AndroidViewModel {
         super(application);
         moRecRepository = MoRecRepository.getInstance();
         currentDetailViewMovement = null;
-        labelList = moRecRepository.getUiLabels();
+        labelList = moRecRepository.getLabels();
         exportButtonText = new MediatorLiveData<>();
         exportButtonEnabled = new MutableLiveData<>();
-        exportButtonText.addSource(moRecRepository.getState_ui(), new Observer<State>() {
+        exportButtonText.addSource(moRecRepository.getState(), new Observer<State>() {
             @Override
             public void onChanged(State state) {
                 switch (state){
@@ -57,7 +57,7 @@ public class LabelPageViewModel extends AndroidViewModel {
                         break;
                     case EXPORTING:
                         exportButtonEnabled.postValue(false);
-                        exportButtonText.postValue("Export läuft noch...");
+                        exportButtonText.postValue(moRecRepository.getExportProgress().getValue());
                         break;
                     case DISCONNECTING:
                         exportButtonEnabled.postValue(false);
@@ -66,7 +66,12 @@ public class LabelPageViewModel extends AndroidViewModel {
                 }
             }
         });
-
+        exportButtonText.addSource(moRecRepository.getExportProgress(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if(moRecRepository.getState().getValue() == State.EXPORTING) exportButtonText.postValue(moRecRepository.getExportProgress().getValue());
+            }
+        });
     }
 
     public MutableLiveData<List<Label>> getLabelList() {
