@@ -1,6 +1,6 @@
 # MoRec
 Dies ist die MotionRecorder App.
-Sie kann verwendet werden um mit Android Smartphones und Sensoren der Firma YostLabs Bewwegungsmuster aufzuzeichnen.
+Sie kann verwendet werden um mit Android Smartphones und Sensoren der Firma YostLabs Bewegungsmuster aufzuzeichnen.
 Dieses können auf den Internen Speicher des telefons exportiert werden und für das Training neuronaler Netze verwendet werden.
 
 Für einfache Anpassungen an der Aufnahmedauer kann die Klasse Constants bearbeitet werden.
