@@ -26,8 +26,6 @@ public class DetailedLabelDialogViewModel extends AndroidViewModel {
     private MediatorLiveData<String> record_button_text;
     private MutableLiveData<Boolean> record_button_enabled;
 
-    private MediatorLiveData<String> record_stats;
-
     public DetailedLabelDialogViewModel(@NonNull Application application) {
         super(application);
         moRecRepository = MoRecRepository.getInstance();
@@ -63,7 +61,6 @@ public class DetailedLabelDialogViewModel extends AndroidViewModel {
                 }
             }
         });
-        record_stats = new MediatorLiveData<>();
     }
 
     public MediatorLiveData<String> getRecord_button_text() {
@@ -81,44 +78,6 @@ public class DetailedLabelDialogViewModel extends AndroidViewModel {
 
     public void setUiLabel(Label label) {
         this.uiLabel = new MutableLiveData<>(label);
-        if(moRecRepository.getSensors().getValue().size() != 0) {
-            Sensor sensor = moRecRepository.getSensors().getValue().get(0);
-            int label_id = uiLabel.getValue().getLabel_id().getValue();
-            MutableLiveData<Integer> number_of_samples = sensor.getNumberOfSamplesForUI(label_id);
-            record_stats.addSource(number_of_samples, new Observer<Integer>() {
-                @Override
-                public void onChanged(Integer integer) {
-                    record_stats.postValue(integer/Constants.SAMPLES_PER_SECOND + " Sekunden");
-                }
-            });
-        }
-        else{
-            record_stats.postValue("Keine Daten...");
-        }
-    }
-
-    public String getMovementName(){
-        return getUiLabel().getValue().getLabel_text_ui().getValue();
-    }
-
-    public void setMovementName(String name){
-        Label new_Label = uiLabel.getValue();
-        new_Label.getLabel_text_ui().postValue(name);
-        uiLabel.postValue(new_Label);
-    }
-
-    public boolean getHoldToRecordChecked(){
-        return uiLabel.getValue().getHoldToRecord().getValue();
-    }
-
-    public void setHoldToRecordChecked(boolean checked){
-        Label new_Label = uiLabel.getValue();
-        new_Label.setHoldToRecord(checked);
-        uiLabel.postValue(new_Label);
-    }
-
-    public LiveData<String> getRecord_stats(){
-        return record_stats;
     }
 
     public boolean OnTouchListener(View view, MotionEvent event){

@@ -42,44 +42,47 @@ public class ClassificationRunner implements Runnable{
             String[] labels = moRecRepository.getModelLabels();
 
             float[] grtlHandgelenk_input = ClassificationUtil.allQuaternionsToFloat(processed_input);
-            float[] grtl_input = ClassificationUtil.sensorQuaternionsToFloat(0,processed_input);
-            float[] handgelenk_input = ClassificationUtil.sensorQuaternionsToFloat(1, processed_input);
 
             Log.d(TAG, "float input size : " + grtlHandgelenk_input.length);
             TensorBuffer inputFeatureGrtlHandgelenk = TensorBuffer.createFixedSize(new int[]{1, 3000 }, DataType.FLOAT32);
+
+            inputFeatureGrtlHandgelenk.loadArray(grtlHandgelenk_input);
+
+            GrtelHandgelenk grtelHandgelenk = GrtelHandgelenk.newInstance(moRecRepository.getContext());
+
+            GrtelHandgelenk.Outputs grtlHandgelenk_outputs = grtelHandgelenk.process(inputFeatureGrtlHandgelenk);
+            TensorBuffer outputFeature_grtlHandgelenk = grtlHandgelenk_outputs.getOutputFeature0AsTensorBuffer();
+
+            float[] result_GrtlHandgelenk = outputFeature_grtlHandgelenk.getFloatArray();
+
+            moRecRepository.setClassificationResult(ClassificationUtil.getMostProbableLabel(labels, result_GrtlHandgelenk));
+
+
+            //EXTRA FOR EVALUATION
+            float[] grtl_input = ClassificationUtil.sensorQuaternionsToFloat(0,processed_input);
+            float[] handgelenk_input = ClassificationUtil.sensorQuaternionsToFloat(1, processed_input);
+
             TensorBuffer inputFeatureGrtl = TensorBuffer.createFixedSize(new int[]{1, 1500 }, DataType.FLOAT32);
             TensorBuffer inputFeatureHandgelenk = TensorBuffer.createFixedSize(new int[]{1, 1500 }, DataType.FLOAT32);
 
-            inputFeatureGrtlHandgelenk.loadArray(grtlHandgelenk_input);
             inputFeatureGrtl.loadArray(grtl_input);
             inputFeatureHandgelenk.loadArray(handgelenk_input);
 
-            GrtelHandgelenk grtelHandgelenk = GrtelHandgelenk.newInstance(moRecRepository.getContext());
             Grtel grtl = Grtel.newInstance(moRecRepository.getContext());
             Handgelenk handgelenk = Handgelenk.newInstance(moRecRepository.getContext());
 
-            GrtelHandgelenk.Outputs grtlHandgelenk_outputs = grtelHandgelenk.process(inputFeatureGrtlHandgelenk);
             Grtel.Outputs grtl_outputs = grtl.process(inputFeatureGrtl);
             Handgelenk.Outputs handgelenk_outputs = handgelenk.process(inputFeatureHandgelenk);
 
-            TensorBuffer outputFeature_grtlHandgelenk = grtlHandgelenk_outputs.getOutputFeature0AsTensorBuffer();
             TensorBuffer outputFeature_Grtl = grtl_outputs.getOutputFeature0AsTensorBuffer();
             TensorBuffer outputFeature_Handgelenk = handgelenk_outputs.getOutputFeature0AsTensorBuffer();
 
-            float[] result_GrtlHandgelenk = outputFeature_grtlHandgelenk.getFloatArray();
             float[] result_Grtl = outputFeature_Grtl.getFloatArray();
             float[] result_Handgelenk = outputFeature_Handgelenk.getFloatArray();
 
             moRecRepository.getCm_GrtlHandgelenk().addValue(result_GrtlHandgelenk,moRecRepository.getCurrent_actual());
             moRecRepository.getCm_Grtl().addValue(result_Grtl, moRecRepository.getCurrent_actual());
             moRecRepository.getCm_Handgelenk().addValue(result_Handgelenk, moRecRepository.getCurrent_actual());
-
-            String[] results = new String[3];
-            results[0] = ClassificationUtil.getMostProbableLabel(labels, result_GrtlHandgelenk);
-            results[1] = ClassificationUtil.getMostProbableLabel(labels, result_Grtl);
-            results[2] = ClassificationUtil.getMostProbableLabel(labels, result_Handgelenk);
-
-            moRecRepository.setClassificationResult(results[0]);
 
             moRecRepository.setClassificationEvaluation("Kombo:\n" + moRecRepository.getCm_GrtlHandgelenk().toString() +
                     "\n\nGürtel:\n" + moRecRepository.getCm_Grtl().toString() +

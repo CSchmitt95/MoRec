@@ -46,7 +46,7 @@ public class ExportRunner implements Runnable{
             //bar.setIndeterminate(false);
             HashMap<Label, FileWriter> writers = new HashMap<>();
             for(Label label : moRecRepository.getLabels().getValue()){
-                File gpxfile = new File(records, label.getLabel_text() + ".csv");
+                File gpxfile = new File(records, label.getLabel_text_ui().getValue() + ".csv");
                 FileWriter writer = new FileWriter(gpxfile);
                 writer.append("MovementName,SensorName,Record_id,x0,y0 z0,w0... wn, xn, yn, zn\n");
                 writers.put(label,writer);
@@ -74,7 +74,7 @@ public class ExportRunner implements Runnable{
                 if(label != null){
                     for(Sensor sensor : moRecRepository.getSensors().getValue()){
                         //writers.get(label).append(label.getLabel_text() + "," + sensor.getName() + ","+ record_id + ExportUtil.getQuaternionStringFromTo(extract_start, extract_end, sensor.getRecordBuffer()) +"\n" );
-                        ExportUtil.writeQuaternionsToFile(label.getLabel_text(), sensor.getName(),record_id, extract_start, extract_end, sensor.getRecordBuffer(),writers.get(label));
+                        ExportUtil.writeQuaternionsToFile(label.getLabel_text_ui().getValue(), sensor.getLive_name().getValue(),record_id, extract_start, extract_end, sensor.getRecordBuffer(),writers.get(label));
                         writers.get(label).flush();
                     }
                     record_id++;

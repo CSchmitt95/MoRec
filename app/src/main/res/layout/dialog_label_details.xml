@@ -21,10 +21,11 @@
                 android:id="@+id/editTextMovementName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="20sp"
                 android:ems="10"
                 android:hint="Bewegungsname"
-                android:text="@={DetailedLabelDialogViewModel.movementName}"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:text="@={DetailedLabelDialogViewModel.uiLabel.label_text_ui}" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -35,9 +36,10 @@
                 <TextView
                     android:id="@+id/tv_sampleCount"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="@{DetailedLabelDialogViewModel.record_stats}"
+                    android:gravity="center"
+                    android:text="@{DetailedLabelDialogViewModel.uiLabel.recording_stats}"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
@@ -45,9 +47,9 @@
                     android:id="@+id/cb_event"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="@={DetailedLabelDialogViewModel.HoldToRecordChecked}"
-                    android:padding="10dp"
-                    android:text="Halten zum\nAufnehmen" />
+                    android:checked="@={DetailedLabelDialogViewModel.uiLabel.holdToRecord}"
+                    android:padding="0dp"
+                    android:text="Halten zum Aufnehmen" />
 
             </LinearLayout>
 
@@ -55,6 +57,7 @@
                 android:id="@+id/btn_record"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_weight="0"
                 android:enabled="@{DetailedLabelDialogViewModel.record_button_enabled}"
                 android:padding="10dp"

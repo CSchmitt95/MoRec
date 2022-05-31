@@ -11,33 +11,31 @@ import de.carloschmitt.morec.repository.Constants;
 public class Label {
     private static int label_counter = 0;
     private final LiveData<Integer> label_id;
-    private String label_text;
+
     private MutableLiveData<String> label_text_ui;
     private MutableLiveData<Boolean> holdToRecord;
     private MediatorLiveData<String> recording_stats;
 
     public Label(String name){
         label_id = new MutableLiveData<>(label_counter++);
-        label_text = name;
-        label_text_ui = new MutableLiveData<>(label_text);
+        label_text_ui = new MutableLiveData<>(name);
         holdToRecord = new MutableLiveData<>(false);
         MutableLiveData<Integer> number_of_samples = MoRecRepository.getInstance().getSensors().getValue().get(0).getNumberOfSamplesForUI(label_id.getValue());
         recording_stats = new MediatorLiveData<>();
         recording_stats.addSource(number_of_samples, new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
-                recording_stats.postValue(integer/ Constants.SAMPLES_PER_SECOND + " Sekunden");
+                int hundreds = (integer*100/Constants.SAMPLES_PER_SECOND) %100;
+                int seconds = (integer/ Constants.SAMPLES_PER_SECOND) % 60;
+                int minutes = (integer/ (Constants.SAMPLES_PER_SECOND*60)) % 60;
+                int hours = integer / (Constants.SAMPLES_PER_SECOND*60*60);
+                recording_stats.postValue(String.format("%01d:%02d:%02d,%02d", hours, minutes, seconds, hundreds));
             }
         });
     }
 
     public MutableLiveData<String> getLabel_text_ui() {
         return label_text_ui;
-    }
-
-    public void setLabel_text_ui(String text){
-        label_text = text;
-        label_text_ui.postValue(label_text);
     }
 
     public LiveData<Integer> getLabel_id(){
@@ -54,9 +52,5 @@ public class Label {
 
     public MediatorLiveData<String> getRecording_stats() {
         return recording_stats;
-    }
-
-    public String getLabel_text() {
-        return label_text;
     }
 }

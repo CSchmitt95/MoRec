@@ -67,7 +67,7 @@ public class BackgroundRunner implements Runnable{
                 e.printStackTrace();
             }
         }
-        if(a_sensor_died) done.countDown();
+        if(a_sensor_died) moRecRepository.triggerDisconnectSignal();
     }
 
     private void doClassification(){
@@ -85,16 +85,16 @@ public class BackgroundRunner implements Runnable{
         // Sensordaten müssen in diesem Thread abgegriffen werden um Safe zu bleiben...
         Log.d(TAG, "Sammle Sensordaten...");
         long beforeData = System.currentTimeMillis();
-        List<List<Quaternion>> input = new ArrayList<>();
+        List<List<Quaternion>> classificationData = new ArrayList<>();
         for(Sensor s : moRecRepository.getSensors().getValue()){
             List<Quaternion> rawQuaternions = s.getLastNQuaternions(Constants.SAMPLES_PER_SECOND*Constants.WINDOW_SIZE_IN_S +1);
-            input.add(rawQuaternions);
+            classificationData.add(rawQuaternions);
         }
         long afterData = System.currentTimeMillis();
         Log.d(TAG, "Daten gesammelt. ( " + (afterData - beforeData) + "ms )");
 
-        Log.d(TAG, "Starte Classification Thread (input size: " + input.size() + ")");
-        ClassificationRunner classificationRunner = new ClassificationRunner(input);
+        Log.d(TAG, "Starte Classification Thread (input size: " + classificationData.size() + ")");
+        ClassificationRunner classificationRunner = new ClassificationRunner(classificationData);
         Thread classificationThread = new Thread(classificationRunner);
         classificationThread.start();
         Log.d(TAG, "Classification Thread gestartet");

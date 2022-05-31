@@ -1,7 +1,5 @@
 package de.carloschmitt.morec.repository.model;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -19,48 +17,48 @@ import de.carloschmitt.morec.repository.Constants;
 
 public class Sensor {
     private static final String TAG = "Sensor";
+    private MoRecRepository moRecRepository;
 
     //UI STUFF
     private MutableLiveData<String> live_name;
     private MutableLiveData<String> live_address;
     private MutableLiveData<Boolean> live_paired;
     private MutableLiveData<Boolean> live_connected;
-    private HashMap<Integer, MutableLiveData<Integer>> ui_SampleCounters;
-    private MutableLiveData<String> live_sensor_health;
+    private HashMap<Integer, MutableLiveData<Integer>> live_SampleCounters;
 
 
-    //FUNCTIONAL STUFF
-    private String name;
-    private String address;
-    private MoRecRepository moRecRepository;
+    //Connection Stuff
     private TssMiniBluetooth tssMiniBluetooth;
+
+    //Recording Stuff
     private ArrayList<Sample> recordBuffer;
-    private int num_of_duplicates;
+
+    //Sensor Health Stuff
+    private int current_num_of_duplicates;
     private int max_num_of_duplicates;
+    private MutableLiveData<String> live_sensor_health;
     private HashMap<Integer, Integer> sampleCounters;
 
     public Sensor(String new_name, String new_address){
         moRecRepository = MoRecRepository.getInstance();
-        this.name = new_name;
-        this.live_name = new MutableLiveData<>(name);
-        this.address = new_address;
-        this.live_address = new MutableLiveData<>(address);
+        this.live_name = new MutableLiveData<>(new_name);
+        this.live_address = new MutableLiveData<>(new_address);
         live_paired = new MutableLiveData<>(false);
         live_connected = new MutableLiveData<>(false);
 
         tssMiniBluetooth = null;
         recordBuffer = new ArrayList<>();
-        num_of_duplicates = 0;
-        max_num_of_duplicates = num_of_duplicates;
+        current_num_of_duplicates = 0;
+        max_num_of_duplicates = current_num_of_duplicates;
         live_sensor_health = new MutableLiveData<>("---");
         sampleCounters = new HashMap<>();
-        ui_SampleCounters = new HashMap<>();
+        live_SampleCounters = new HashMap<>();
     }
 
     public void createConnection() throws TssConnectionException, TssCommunicationException {
         tssMiniBluetooth = new TssMiniBluetooth(live_address.getValue(), true);
         tssMiniBluetooth.startStream();
-        num_of_duplicates = 0;
+        current_num_of_duplicates = 0;
         max_num_of_duplicates = 0;
     }
 
@@ -80,10 +78,10 @@ public class Sensor {
 
         if (sampleCounters.get(label_id) == null) {
             sampleCounters.put(label_id, 1);
-            ui_SampleCounters.put(label_id, new MutableLiveData<>(1));
+            live_SampleCounters.put(label_id, new MutableLiveData<>(1));
         }
         sampleCounters.put(label_id, sampleCounters.get(label_id) + 1);
-        ui_SampleCounters.get(label_id).postValue(sampleCounters.get(label_id));
+        live_SampleCounters.get(label_id).postValue(sampleCounters.get(label_id));
     }
 
     private boolean checkForNewDuplicate(){
@@ -92,13 +90,18 @@ public class Sensor {
     }
 
     public MutableLiveData<Integer> getNumberOfSamplesForUI(int label_id){
-        if (ui_SampleCounters.get(label_id) == null) {
+        if (live_SampleCounters.get(label_id) == null) {
             sampleCounters.put(label_id, 0);
-            ui_SampleCounters.put(label_id, new MutableLiveData<>(sampleCounters.get(label_id)));
+            live_SampleCounters.put(label_id, new MutableLiveData<>(sampleCounters.get(label_id)));
 
         }
-        return ui_SampleCounters.get(label_id);
+        return live_SampleCounters.get(label_id);
     }
+
+    /**
+     * Classification Stuff
+     *
+     */
 
     public boolean bufferIsSaturated(){
         return recordBuffer.size() > Constants.SAMPLES_PER_SECOND*Constants.WINDOW_SIZE_IN_S +1;
@@ -114,19 +117,36 @@ public class Sensor {
         return ret;
     }
 
+    /**
+     * Export stuff
+     */
+
     public ArrayList<Sample> getRecordBuffer() {
         return recordBuffer;
     }
 
+    /**
+     * SensorHealth Stuff
+     */
+
     private void increaseDuplicateQuaternions(){
-        num_of_duplicates++;
-        if(num_of_duplicates > max_num_of_duplicates) max_num_of_duplicates = num_of_duplicates;
+        current_num_of_duplicates++;
+        if(current_num_of_duplicates > max_num_of_duplicates) max_num_of_duplicates = current_num_of_duplicates;
         live_sensor_health.postValue(Integer.toString(max_num_of_duplicates));
     }
 
     private void resetDuplicateQuaternions() {
-        num_of_duplicates = 0;
+        current_num_of_duplicates = 0;
     }
+
+    public boolean died(){
+        return current_num_of_duplicates > Constants.SENSOR_HEALTH_THRESHHOLD;
+    }
+
+    /**
+     * Getters and Setters
+     */
+
 
     public LiveData<Boolean> getLive_paired() {
         return live_paired;
@@ -140,18 +160,13 @@ public class Sensor {
         return live_name;
     }
 
-    public void setLive_name(MutableLiveData<String> new_name) {
-        this.name = new_name.getValue();
-        this.live_name.postValue(name);
-    }
 
     public MutableLiveData<String> getLive_address() {
         return live_address;
     }
 
     public void setLive_address(MutableLiveData<String> new_address) {
-        this.address = new_address.getValue();
-        this.live_address.postValue(address);
+        this.live_address = new_address;
     }
 
     public void setPaired() {
@@ -168,11 +183,4 @@ public class Sensor {
         return live_sensor_health;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public boolean died(){
-        return num_of_duplicates > Constants.SENSOR_HEALTH_THRESHHOLD;
-    }
 }

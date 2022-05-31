@@ -45,9 +45,10 @@ public class MainActivity extends AppCompatActivity {
         android.app.AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
         final EditText input = new EditText(this);
+        input.setHint("Sitzungsname");
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
         alertDialogBuilder.setView(input);
-        alertDialogBuilder.setTitle("Sessionnamen eingeben");
+        alertDialogBuilder.setTitle("Sitzungsname festlegen");
         alertDialogBuilder.setPositiveButton("festlegen",  new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        alertDialogBuilder.setCancelable(false);
         alertDialogBuilder.create().show();
     }
 }
