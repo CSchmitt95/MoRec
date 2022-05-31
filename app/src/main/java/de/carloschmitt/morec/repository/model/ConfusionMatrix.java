@@ -6,6 +6,13 @@ import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.util.ClassificationUtil;
 import de.carloschmitt.morec.repository.Constants;
 
+/**
+ * Konfusionsmatrix-Klasse.
+ * Kann verwendet werden um die Performanz eines Netzes in echtzeit zu evaluieren.
+ * addValue wird verwendet um Werte einzutragen.
+ * to String gibt die Matrix als Text aus
+ *
+ */
 public class ConfusionMatrix {
     private static final String TAG = "ConfusionMatrix";
     private int[][] matrix;
@@ -31,22 +38,6 @@ public class ConfusionMatrix {
 
     public int[][] getMatrix(){
         return matrix;
-    }
-
-    public float getSensitivityOf(int index){
-        int sum = 0;
-        for(int i = 0; i < matrix.length; i++){
-            sum += matrix[index][i];
-        }
-        return matrix[index][index]/sum;
-    }
-
-    public float getSpecificityOf(int index){
-        int sum = 0;
-        for(int i = 0; i < matrix.length; i++){
-            sum += matrix[i][index];
-        }
-        return matrix[index][index]/sum;
     }
 
     @Override

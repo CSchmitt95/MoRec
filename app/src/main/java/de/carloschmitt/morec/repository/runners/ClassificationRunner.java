@@ -17,6 +17,10 @@ import de.carloschmitt.morec.ml.Handgelenk;
 import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.util.ClassificationUtil;
 
+/**
+ * Kümmert sich um die Klassifizierung.
+ * Wird als Extra Runner ausgeführt, damit die Laufzeit des BackgroundRunners kurz gehalten wird.
+ */
 public class ClassificationRunner implements Runnable{
     private final String TAG = "ClassificationRunner";
     private List<List<Quaternion>> input;

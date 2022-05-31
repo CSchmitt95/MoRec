@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.view;
+package de.carloschmitt.morec.view.fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import de.carloschmitt.morec.databinding.PageSetupBinding;
 import de.carloschmitt.morec.viewmodel.SetupPageViewModel;
+import de.carloschmitt.morec.viewmodel.adapters.SensorAdapter;
 
 public class SetupPage extends Fragment {
     private static final String TAG = "SetupPage";
@@ -33,7 +34,7 @@ public class SetupPage extends Fragment {
 
         //RecylcerView
         binding.rvSensors.setLayoutManager(new LinearLayoutManager(getActivity()));
-        de.carloschmitt.morec.adapters.SensorAdapter sensorAdapter = new de.carloschmitt.morec.adapters.SensorAdapter(setupPageViewModel);
+        SensorAdapter sensorAdapter = new SensorAdapter(setupPageViewModel);
         setupPageViewModel.getUiSensors().observe(getViewLifecycleOwner(), list -> sensorAdapter.submitList(new ArrayList<>(list)));
         binding.rvSensors.setAdapter(sensorAdapter);
 

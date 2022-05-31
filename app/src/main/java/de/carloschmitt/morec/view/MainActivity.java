@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.view.activities;
+package de.carloschmitt.morec.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;

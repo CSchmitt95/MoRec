@@ -18,6 +18,9 @@ import de.carloschmitt.morec.repository.Constants;
 import de.carloschmitt.morec.repository.util.ExportUtil;
 import de.carloschmitt.morec.repository.util.State;
 
+/**
+ * Exportiert alle Daten aus den RecordBuffern und alle Evaluationsdaten
+ */
 public class ExportRunner implements Runnable{
 
     private static final String TAG = "ExportRunner";
@@ -30,7 +33,6 @@ public class ExportRunner implements Runnable{
         {
             //Export Recorded Data
             long before = System.currentTimeMillis();
-            //String foldername = new SimpleDateFormat("yyyyMMdd_HH:mm").format(new Date());
             String foldername = moRecRepository.getSessionName();
             File root = new File(moRecRepository.getContext().getExternalFilesDir(null).toString(), foldername);
             File records = new File(moRecRepository.getContext().getExternalFilesDir(null).toString(), foldername+"/records");
@@ -42,8 +44,6 @@ public class ExportRunner implements Runnable{
                 eval.mkdirs();
                 runtimes.mkdirs();
             }
-            //bar.setMax(movements.size()*100);
-            //bar.setIndeterminate(false);
             HashMap<Label, FileWriter> writers = new HashMap<>();
             for(Label label : moRecRepository.getLabels().getValue()){
                 File gpxfile = new File(records, label.getLabel_text_ui().getValue() + ".csv");

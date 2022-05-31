@@ -13,7 +13,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import de.carloschmitt.morec.databinding.DialogLabelDetailsBinding;
-import de.carloschmitt.morec.view.activities.MainActivity;
+import de.carloschmitt.morec.view.MainActivity;
 import de.carloschmitt.morec.viewmodel.DetailedLabelDialogViewModel;
 import de.carloschmitt.morec.viewmodel.LabelPageViewModel;
 

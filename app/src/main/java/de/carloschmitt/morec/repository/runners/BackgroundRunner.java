@@ -12,6 +12,10 @@ import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.Constants;
 
+/**
+ * Wird ausgeführt solang eine Verbindung besteht.
+ * Der Runner kümmert sich darum, dass alle Daten dort hin kommen wo sie hingehören.
+ */
 
 public class BackgroundRunner implements Runnable{
     MoRecRepository moRecRepository;

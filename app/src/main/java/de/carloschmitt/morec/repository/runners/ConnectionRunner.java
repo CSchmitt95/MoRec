@@ -21,6 +21,11 @@ import de.carloschmitt.morec.repository.Constants;
 import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.util.State;
 
+/**
+ * Steuert die Sensorverbindung.
+ * Dieser Runner läuft über die gesamte Verbindungsdauer und pausiert, solange alle Sensoren verbunden sind.
+ * Bei erhalten des Trennungssignals, werden alle Sensoren getrennt.
+ */
 public class ConnectionRunner implements Runnable {
     private static final String TAG = "SensorConnectionRunner";
     CountDownLatch done;

@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.adapters;
+package de.carloschmitt.morec.viewmodel.adapters;
 
 import android.annotation.SuppressLint;
 import android.view.View;

@@ -15,6 +15,16 @@ import java.util.List;
 import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.Constants;
 
+/**
+ * Repräsentiert einen Eintrag in die Sensor Liste.
+ * Stellt alle wichtigen Daten für die Darstellung bereit.
+ * Implementiert diverse funktionsmethoden für:
+ *  - Sensorverbindung
+ *  - Aufnahme
+ *  - Klassifizierung
+ *  - Export
+ *
+ */
 public class Sensor {
     private static final String TAG = "Sensor";
     private MoRecRepository moRecRepository;

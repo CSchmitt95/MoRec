@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.adapters;
+package de.carloschmitt.morec.viewmodel.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +15,7 @@ import de.carloschmitt.morec.databinding.ItemSensorBinding;
 import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.model.Sensor;
 import de.carloschmitt.morec.repository.util.State;
-import de.carloschmitt.morec.view.activities.MainActivity;
+import de.carloschmitt.morec.view.MainActivity;
 import de.carloschmitt.morec.viewmodel.SetupPageViewModel;
 
 public class SensorAdapter extends ListAdapter<Sensor,RecyclerView.ViewHolder> {

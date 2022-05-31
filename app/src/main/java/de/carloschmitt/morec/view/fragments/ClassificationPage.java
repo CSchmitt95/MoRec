@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.view;
+package de.carloschmitt.morec.view.fragments;
 
 import android.content.Context;
 import android.os.Bundle;

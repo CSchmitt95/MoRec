@@ -28,6 +28,12 @@ public class ClassificationUtil {
         return ret;
     }
 
+    /**
+     * Gibt aus einer Quaternionenliste mit mehreren Sensoren die Float-Komponenten der Quaternionen eines Sensors zurück.
+     * @param sensor die Daten welches Sensors sollen zurückgegeben werden?
+     * @param quaternionList Aus welcher Liste sollen die Daten genommen werden?
+     * @return Ein Float-Array, mit den Komponenten der angegebenen Quaternionen
+     */
     public static float[] sensorQuaternionsToFloat(int sensor, List<Quaternion> quaternionList){
         float[] ret = new float[Constants.QUATERNIONS_PER_WINDOW * 4];
 
@@ -60,6 +66,11 @@ public class ClassificationUtil {
         return ret;
     }
 
+    /**
+     * Nulll die Komponenten der Quaternionen an der ersten Quaternion der Liste.
+     * @param quaternionList Die Liste der Quaternionen, die genullt werden sollen.
+     * @return die genullte Liste.
+     */
     public static List<Quaternion> nullifyQuaternions(List<Quaternion> quaternionList){
         Quaternion first = quaternionList.get(0);
 
@@ -77,6 +88,11 @@ public class ClassificationUtil {
         return ret;
     }
 
+    /**
+     * Diese Methode findet raus, ob die beiden Modelle der einzel-Sensoren unterschiedliche Ergebnisse liefern.
+     * @param results
+     * @return
+     */
     public static String getConflictString(String[] results){
         String ret = "";
         String[] sensor_names = new String[MoRecRepository.getInstance().getSensors().getValue().size() + 1];
@@ -93,6 +109,12 @@ public class ClassificationUtil {
         return ret;
     }
 
+    /**
+     * GIbt das Label mit der höchsten Wahrscheinlichkeit zurück.
+     * @param labels
+     * @param result
+     * @return
+     */
     public static String getMostProbableLabel(String[] labels, float[] result){
         int label_index = indexOfMax(result);
         return labels[label_index];

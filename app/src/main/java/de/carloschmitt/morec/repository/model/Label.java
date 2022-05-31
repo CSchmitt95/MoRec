@@ -8,6 +8,11 @@ import androidx.lifecycle.Observer;
 import de.carloschmitt.morec.repository.MoRecRepository;
 import de.carloschmitt.morec.repository.Constants;
 
+/**
+ * Datenklasse zum Halten der Daten für die Label-Karte.
+ * Label Counter regelt die Label_IDs
+ * Die Klasse stellt Daten für die UI bereit
+ */
 public class Label {
     private static int label_counter = 0;
     private final LiveData<Integer> label_id;

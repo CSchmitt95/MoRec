@@ -1,4 +1,4 @@
-package de.carloschmitt.morec.view;
+package de.carloschmitt.morec.view.fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -16,9 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import de.carloschmitt.morec.adapters.LabelAdapter;
 import de.carloschmitt.morec.databinding.PageRecordBinding;
 import de.carloschmitt.morec.viewmodel.LabelPageViewModel;
+import de.carloschmitt.morec.viewmodel.adapters.LabelAdapter;
 
 public class LabelPage extends Fragment {
     private static final String TAG = "LabelPage";
